@@ -46,12 +46,11 @@ export const HOLES = {
 } as const;
 
 export const THREAD = {
-  springK: 48,
-  dampingC: 14,
-  strokeWidth: 9,
-  tipRadius: 7.5,
-  /** Visible loose cord even at top of page (mockup parity) */
-  initialProgress: 0.1,
+  springK: 55,
+  dampingC: 15,
+  strokeWidth: 10,
+  tipRadius: 7,
+  initialProgress: 0.02,
 } as const;
 
 export const DEBUG_STITCHING = false;
