@@ -7,10 +7,19 @@ import { SectionLabel } from "./SectionLabel";
 export function Hero({ stitchProgress = 0 }: { stitchProgress?: number }) {
   return (
     <section id="intro" className="section hero" aria-labelledby="hero-heading">
-      <SectionLabel index="01" label="INTRO" progress={Math.min(1, stitchProgress / 0.12)} />
+      <SectionLabel
+        index="01"
+        label="INTRO"
+        progress={Math.min(1, stitchProgress / 0.12)}
+      />
 
-      <div className="hero__grid">
-        <div className="hero__copy" data-stitch-content data-stitch-id="hero-copy" data-side="left">
+      <div className="seam-layout hero__layout">
+        <div
+          className="seam-layout__left hero__copy"
+          data-stitch-content
+          data-stitch-id="hero-copy"
+          data-side="left"
+        >
           <p className="eyebrow">Product Thinker</p>
           <h1 id="hero-heading" className="hero__title">
             I stitch problems, systems and people into{" "}
@@ -28,17 +37,21 @@ export function Hero({ stitchProgress = 0 }: { stitchProgress?: number }) {
           </a>
         </div>
 
-        <FabricPatch
-          className="hero__patch"
-          data-stitch-content
-          data-stitch-id="hero-patch"
-          data-side="right"
-        >
-          <IconStarBurst className="text-accent" size={42} />
-          <p className="hero__patch-text">
-            Turning scattered pieces into seamless experiences.
-          </p>
-        </FabricPatch>
+        <div className="seam-layout__corridor" aria-hidden />
+
+        <div className="seam-layout__right hero__aside">
+          <FabricPatch
+            className="hero__patch"
+            data-stitch-content
+            data-stitch-id="hero-patch"
+            data-side="right"
+          >
+            <IconStarBurst className="text-accent" size={36} />
+            <p className="hero__patch-text">
+              Turning scattered pieces into seamless experiences.
+            </p>
+          </FabricPatch>
+        </div>
       </div>
     </section>
   );

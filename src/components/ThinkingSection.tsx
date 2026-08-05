@@ -20,11 +20,12 @@ export function ThinkingSection({
     >
       <SectionLabel index="03" label="THINKING" progress={local} />
 
-      <div className="thinking__grid">
+      <div className="seam-layout">
         <div
-          className="thinking__intro"
+          className="seam-layout__left"
           data-stitch-content
           data-stitch-id="thinking-intro"
+          data-side="left"
         >
           <h2 id="thinking-heading" className="section-title">
             How I Think
@@ -38,21 +39,29 @@ export function ThinkingSection({
           </a>
         </div>
 
-        <div className="thinking__swatches">
-          {principles.map((p, i) => (
-            <FabricPatch
-              key={p.id}
-              className="thinking__swatch"
-              data-stitch-content
-              data-stitch-id={`principle-${p.id}`}
-              style={{
-                ["--settle" as string]: String(Math.min(1, local * 1.5 - i * 0.1)),
-              }}
-            >
-              <PrincipleIcon name={p.icon} className="text-accent" size={34} />
-              <p>{p.text}</p>
-            </FabricPatch>
-          ))}
+        <div className="seam-layout__corridor" aria-hidden />
+
+        <div className="seam-layout__right">
+          <ul className="thinking__list">
+            {principles.map((p, i) => (
+              <li key={p.id}>
+                <FabricPatch
+                  className="thinking__item"
+                  data-stitch-content
+                  data-stitch-id={`principle-${p.id}`}
+                  data-side="right"
+                  style={{
+                    ["--settle" as string]: String(
+                      Math.min(1, local * 1.5 - i * 0.1),
+                    ),
+                  }}
+                >
+                  <PrincipleIcon name={p.icon} className="text-accent" size={28} />
+                  <p>{p.text}</p>
+                </FabricPatch>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

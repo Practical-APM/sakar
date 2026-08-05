@@ -8,10 +8,10 @@ import {
 } from "react";
 import { AdaptiveQuality } from "@/stitching/AdaptiveQuality";
 import {
+  drawClothSplit,
   drawGrommet,
   drawJuteRope,
   drawLooseTip,
-  drawSeamCrease,
 } from "@/stitching/CanvasRenderer";
 import { collectContentRects } from "@/stitching/CollisionSystem";
 import { THREAD } from "@/stitching/constants";
@@ -24,9 +24,15 @@ import { useScrollPhysics } from "@/hooks/useScrollPhysics";
 type StitchLayerProps = {
   children: ReactNode;
   onProgress?: (progress: number) => void;
+  /** 0–1 from spool handoff so page rope continues the loading thread */
+  handoffProgress?: number;
 };
 
-export function StitchLayer({ children, onProgress }: StitchLayerProps) {
+export function StitchLayer({
+  children,
+  onProgress,
+  handoffProgress = 0,
+}: StitchLayerProps) {
   const reduced = useReducedMotion();
   const scrollProgress = useScrollPhysics();
   const engineRef = useRef<StitchEngine | null>(null);
@@ -36,17 +42,20 @@ export function StitchLayer({ children, onProgress }: StitchLayerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const fpsRef = useRef<HTMLDivElement>(null);
   const scrollProgressRef = useRef(0);
+  const handoffRef = useRef(handoffProgress);
   const reducedRef = useRef(reduced);
   const onProgressRef = useRef(onProgress);
   const lastEmittedProgress = useRef(-1);
   const debugEnabled = useRef(false);
   const pageSize = useRef({ w: 0, h: 0 });
-  const grommetsDirty = useRef(true);
-  const grommetLayer = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     scrollProgressRef.current = scrollProgress;
   }, [scrollProgress]);
+
+  useEffect(() => {
+    handoffRef.current = handoffProgress;
+  }, [handoffProgress]);
 
   useEffect(() => {
     reducedRef.current = reduced;
@@ -83,24 +92,6 @@ export function StitchLayer({ children, onProgress }: StitchLayerProps) {
       const ctx = canvas.getContext("2d");
       if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-
-    // Offscreen grommet cache (static until rebuild)
-    if (!grommetLayer.current) {
-      grommetLayer.current = document.createElement("canvas");
-    }
-    const layer = grommetLayer.current;
-    layer.width = Math.floor(w * dpr);
-    layer.height = Math.floor(h * dpr);
-    const lctx = layer.getContext("2d");
-    if (lctx) {
-      lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      lctx.clearRect(0, 0, w, h);
-      const snap = engineRef.current.peek();
-      for (const hole of snap.holes) {
-        drawGrommet(lctx, hole, 1);
-      }
-    }
-    grommetsDirty.current = false;
   }, []);
 
   useEffect(() => {
@@ -111,8 +102,7 @@ export function StitchLayer({ children, onProgress }: StitchLayerProps) {
       resizeTimer = window.setTimeout(rebuild, 120);
     };
     window.addEventListener("resize", onResize);
-    // One settle rebuild after layout/fonts — not continuous RO thrash
-    const t = window.setTimeout(rebuild, 350);
+    const t = window.setTimeout(rebuild, 400);
     return () => {
       window.removeEventListener("resize", onResize);
       window.clearTimeout(t);
@@ -135,10 +125,12 @@ export function StitchLayer({ children, onProgress }: StitchLayerProps) {
         const skip = level === 0 && frame % 2 === 1;
         frame += 1;
 
-        // Scroll drives stitch — start near empty so animation is obvious
+        // Combine spool handoff + scroll into stitch progress
+        const scrollT = scrollProgressRef.current * 0.9;
+        const handoffT = handoffRef.current * 0.08;
         const target = reducedRef.current
           ? 1
-          : scrollProgressRef.current * 0.92 + 0.02;
+          : Math.min(1, 0.015 + handoffT + scrollT);
         engine.setScrollProgress(target);
         const snap = engine.tick(now);
 
@@ -146,67 +138,72 @@ export function StitchLayer({ children, onProgress }: StitchLayerProps) {
           const { w, h } = pageSize.current;
           ctx.clearRect(0, 0, w, h);
 
-          drawSeamCrease(ctx, snap.seam, snap.seamGap);
+          drawClothSplit(
+            ctx,
+            snap.seam,
+            snap.seamGap,
+            h,
+            snap.gapProfile,
+          );
 
-          // Cached grommets under rope
-          if (grommetLayer.current) {
-            ctx.drawImage(grommetLayer.current, 0, 0, w, h);
+          // Rivets under rope (with local pull-in already in positions)
+          for (const hole of snap.holes) {
+            let squeeze = 1;
+            if (snap.tip) {
+              const d = Math.hypot(
+                hole.position.x - snap.tip.x,
+                hole.position.y - snap.tip.y,
+              );
+              if (d < 40) squeeze = 0.9 + (d / 40) * 0.1;
+            }
+            drawGrommet(ctx, hole, squeeze);
           }
 
-          if (snap.visiblePath.length > 1) {
-            drawJuteRope(
-              ctx,
-              snap.visiblePath,
-              THREAD.strokeWidth,
-              snap.slack,
-            );
+          drawJuteRope(
+            ctx,
+            snap.visibleRuns,
+            THREAD.strokeWidth,
+            snap.slack,
+          );
+
+          if (snap.tip && !snap.tip.occluded) {
+            const runs = snap.visibleRuns;
+            const lastRun = runs[runs.length - 1];
+            let tangent = { x: 0, y: 1 };
+            if (lastRun && lastRun.length >= 2) {
+              const a = lastRun[lastRun.length - 2];
+              const b = lastRun[lastRun.length - 1];
+              const mag = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+              tangent = { x: (b.x - a.x) / mag, y: (b.y - a.y) / mag };
+            }
+            drawLooseTip(ctx, snap.tip, THREAD.strokeWidth, tangent);
           }
 
-          if (snap.tip) {
-            const path = snap.visiblePath;
-            const a = path[path.length - 2];
-            const b = path[path.length - 1];
-            const tangent =
-              a && b
-                ? {
-                    x: b.x - a.x,
-                    y: b.y - a.y,
-                  }
-                : { x: 0, y: 1 };
-            const mag = Math.hypot(tangent.x, tangent.y) || 1;
-            drawLooseTip(ctx, snap.tip, THREAD.strokeWidth, {
-              x: tangent.x / mag,
-              y: tangent.y / mag,
-            });
-          }
-
-          // Re-draw completed grommets on top of rope (metal over lace)
+          // Rivets over rope where already laced (flange on top of cord)
           for (let i = 0; i < snap.completedHoleCount; i++) {
             const hole = snap.holes[i];
-            if (hole) drawGrommet(ctx, hole, 0.97);
+            if (hole) drawGrommet(ctx, hole, 0.96);
           }
 
-          // Settle content ~10fps — enough for feel, cheap
           if (
             contentRef.current &&
             Math.abs(snap.progress - lastSettle) > 0.02
           ) {
             lastSettle = snap.progress;
-            const nodes = contentRef.current.querySelectorAll(
-              "[data-stitch-content]",
-            );
-            nodes.forEach((node, i) => {
-              const el = node as HTMLElement;
-              const side =
-                (el.dataset.side as "left" | "right" | undefined) ??
-                (i % 2 === 0 ? "left" : "right");
-              const { x, rotate } = contentSettleOffset(
-                snap.progress,
-                side,
-                i,
-              );
-              el.style.transform = `translate3d(${x.toFixed(1)}px,0,0) rotate(${rotate.toFixed(2)}deg)`;
-            });
+            contentRef.current
+              .querySelectorAll("[data-stitch-content]")
+              .forEach((node, i) => {
+                const el = node as HTMLElement;
+                const side =
+                  (el.dataset.side as "left" | "right" | undefined) ??
+                  (i % 2 === 0 ? "left" : "right");
+                const { x, rotate } = contentSettleOffset(
+                  snap.progress,
+                  side,
+                  i,
+                );
+                el.style.transform = `translate3d(${x.toFixed(1)}px,0,0) rotate(${rotate.toFixed(2)}deg)`;
+              });
           }
         }
 
@@ -215,10 +212,6 @@ export function StitchLayer({ children, onProgress }: StitchLayerProps) {
             "--stitch-progress",
             String(snap.progress),
           );
-        }
-
-        if (fpsRef.current && debugEnabled.current) {
-          fpsRef.current.textContent = `Q${qualityRef.current.level} ${(snap.progress * 100).toFixed(0)}% path ${snap.visiblePath.length}`;
         }
 
         if (

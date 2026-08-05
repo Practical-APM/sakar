@@ -1,4 +1,5 @@
 import type { Hole, SeamPoint, Vec2 } from "@/types";
+import type { HelixPoint } from "./HelixPath";
 
 function drawSoftEllipse(
   ctx: CanvasRenderingContext2D,
@@ -17,37 +18,112 @@ function drawSoftEllipse(
   ctx.fill();
 }
 
-/** Soft recessed crease only — never a solid dark “wire”. */
-export function drawSeamCrease(
+function gapAt(
+  profile: { y: number; gap: number }[],
+  y: number,
+  fallback: number,
+) {
+  if (!profile.length) return fallback;
+  let best = profile[0];
+  let bestD = Math.abs(profile[0].y - y);
+  for (const p of profile) {
+    const d = Math.abs(p.y - y);
+    if (d < bestD) {
+      bestD = d;
+      best = p;
+    }
+  }
+  return best.gap;
+}
+
+/** Black void between cloth halves — width follows local stitch tension */
+export function drawClothSplit(
   ctx: CanvasRenderingContext2D,
   seam: SeamPoint[],
-  gap: number,
+  avgGap: number,
+  height: number,
+  gapProfile: { y: number; gap: number }[] = [],
 ) {
   if (seam.length < 2) return;
 
   ctx.save();
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-
   ctx.beginPath();
-  ctx.moveTo(seam[0].x, seam[0].y);
-  for (let i = 1; i < seam.length; i++) ctx.lineTo(seam[i].x, seam[i].y);
-  ctx.strokeStyle = "rgba(60, 45, 25, 0.12)";
-  ctx.lineWidth = Math.max(6, gap * 1.1);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(seam[0].x - gap * 0.35, seam[0].y);
+  // Left edge of void
+  const half0 = gapAt(gapProfile, seam[0].y, avgGap) / 2;
+  ctx.moveTo(seam[0].x - half0, 0);
+  ctx.lineTo(seam[0].x - half0, seam[0].y);
   for (let i = 1; i < seam.length; i++) {
-    ctx.lineTo(seam[i].x - gap * 0.35, seam[i].y);
+    const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
+    ctx.lineTo(seam[i].x - h, seam[i].y);
   }
-  ctx.strokeStyle = "rgba(255, 250, 240, 0.22)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
+  const last = seam[seam.length - 1];
+  const halfLast = gapAt(gapProfile, last.y, avgGap) / 2;
+  ctx.lineTo(last.x - halfLast, height);
+  ctx.lineTo(last.x + halfLast, height);
+  for (let i = seam.length - 1; i >= 0; i--) {
+    const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
+    ctx.lineTo(seam[i].x + h, seam[i].y);
+  }
+  ctx.lineTo(seam[0].x + half0, 0);
+  ctx.closePath();
+  ctx.fillStyle = "#050403";
+  ctx.fill();
+
+  // Fold lips
+  for (const side of [-1, 1] as const) {
+    ctx.beginPath();
+    ctx.moveTo(seam[0].x + side * half0, seam[0].y);
+    for (let i = 1; i < seam.length; i++) {
+      const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
+      ctx.lineTo(seam[i].x + side * h, seam[i].y);
+    }
+    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    ctx.lineWidth = 14;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(seam[0].x + side * (half0 + 1.5), seam[0].y);
+    for (let i = 1; i < seam.length; i++) {
+      const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
+      ctx.lineTo(seam[i].x + side * (h + 1.5), seam[i].y);
+    }
+    ctx.strokeStyle = "rgba(255,250,240,0.18)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // Tension creases
+  for (let k = 0; k < 8; k++) {
+    const idx = Math.floor((seam.length * (k + 1)) / 10);
+    const p = seam[idx];
+    if (!p) continue;
+    const prev = seam[Math.max(0, idx - 1)];
+    const next = seam[Math.min(seam.length - 1, idx + 1)];
+    let tx = next.x - prev.x;
+    let ty = next.y - prev.y;
+    const mag = Math.hypot(tx, ty) || 1;
+    tx /= mag;
+    ty /= mag;
+    const nx = -ty;
+    const side = k % 2 === 0 ? -1 : 1;
+    const h = gapAt(gapProfile, p.y, avgGap) / 2;
+    const len = 36 + (k % 3) * 24;
+    ctx.beginPath();
+    ctx.moveTo(p.x + nx * side * (h + 3), p.y);
+    ctx.quadraticCurveTo(
+      p.x + nx * side * (h + len * 0.4) + tx * 10,
+      p.y + ty * 16,
+      p.x + nx * side * (h + len),
+      p.y + ty * (6 + k * 2),
+    );
+    ctx.strokeStyle = `rgba(35, 26, 14, ${0.05 + (k % 3) * 0.02})`;
+    ctx.lineWidth = 9;
+    ctx.stroke();
+  }
 
   ctx.restore();
 }
 
+/** Photoreal brass rivet / eyelet */
 export function drawGrommet(
   ctx: CanvasRenderingContext2D,
   hole: Hole,
@@ -58,103 +134,93 @@ export function drawGrommet(
 
   ctx.save();
 
-  drawSoftEllipse(
-    ctx,
-    x + 1.2,
-    y + 2.4,
-    R * 1.35,
-    R * 0.5,
-    "rgba(40, 28, 10, 0.32)",
-  );
+  // Contact shadow into void/cloth
+  drawSoftEllipse(ctx, x + 1.5, y + 3, R * 1.5, R * 0.55, "rgba(0,0,0,0.55)");
 
-  const metal = ctx.createRadialGradient(
-    x - R * 0.38,
-    y - R * 0.42,
-    R * 0.1,
+  // Outer flange — brushed metal rings
+  const flange = ctx.createRadialGradient(
+    x - R * 0.4,
+    y - R * 0.45,
+    R * 0.05,
     x,
     y,
-    R + 2,
+    R + 3,
   );
-  metal.addColorStop(0, "#FFF3C4");
-  metal.addColorStop(0.28, "#E0BF55");
-  metal.addColorStop(0.55, "#B8911E");
-  metal.addColorStop(0.85, "#7A5E12");
-  metal.addColorStop(1, "#4A380A");
+  flange.addColorStop(0, "#F2E2A8");
+  flange.addColorStop(0.18, "#D4B24A");
+  flange.addColorStop(0.42, "#A88820");
+  flange.addColorStop(0.7, "#6E5610");
+  flange.addColorStop(1, "#2E2408");
 
   ctx.beginPath();
-  ctx.arc(x, y, R + 1.8, 0, Math.PI * 2);
-  ctx.fillStyle = metal;
+  ctx.ellipse(x, y + 0.4, R + 2.4, R + 1.9, 0, 0, Math.PI * 2);
+  ctx.fillStyle = flange;
   ctx.fill();
 
+  // Machined ring groove
   ctx.beginPath();
-  ctx.arc(x, y, R - 0.8, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(50, 38, 8, 0.55)";
-  ctx.lineWidth = 1.4;
+  ctx.arc(x, y, R + 0.3, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(20, 14, 4, 0.55)";
+  ctx.lineWidth = 2.2;
   ctx.stroke();
 
-  const voidG = ctx.createRadialGradient(
-    x,
-    y,
-    0,
-    x,
-    y,
-    Math.max(2, R - 3.2),
-  );
-  voidG.addColorStop(0, "#1A1710");
-  voidG.addColorStop(1, "#4A4538");
   ctx.beginPath();
-  ctx.arc(x, y, Math.max(2, R - 3.2), 0, Math.PI * 2);
-  ctx.fillStyle = voidG;
+  ctx.arc(x, y, R - 0.2, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(255, 230, 160, 0.25)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Barrel wall (cylinder into cloth)
+  const barrel = ctx.createRadialGradient(x, y, R * 0.35, x, y, R - 1.5);
+  barrel.addColorStop(0, "#1a150c");
+  barrel.addColorStop(0.55, "#3d3420");
+  barrel.addColorStop(1, "#8a7428");
+  ctx.beginPath();
+  ctx.arc(x, y, Math.max(2.5, R - 1.6), 0, Math.PI * 2);
+  ctx.fillStyle = barrel;
   ctx.fill();
 
+  // True hole — black void showing through
+  ctx.beginPath();
+  ctx.arc(x, y, Math.max(1.8, R - 3.6), 0, Math.PI * 2);
+  ctx.fillStyle = "#030201";
+  ctx.fill();
+
+  // Tiny anisotropic glint (brushed, not cartoon)
   ctx.beginPath();
   ctx.ellipse(
-    x - R * 0.35,
-    y - R * 0.38,
-    R * 0.26,
-    R * 0.14,
-    -0.5,
+    x - R * 0.4,
+    y - R * 0.42,
+    R * 0.35,
+    R * 0.1,
+    -0.6,
     0,
     Math.PI * 2,
   );
-  ctx.fillStyle = "rgba(255, 248, 220, 0.65)";
+  ctx.fillStyle = "rgba(255, 245, 210, 0.35)";
   ctx.fill();
 
   ctx.restore();
 }
 
 const JUTE = {
-  shadow: "#3D2E12",
-  dark: "#6B4E1A",
-  mid: "#A67C2D",
-  light: "#D4B06A",
-  highlight: "#F0E0B0",
+  deepest: "#241808",
+  dark: "#4A3514",
+  mid: "#7A5C22",
+  fiber: "#9A7830",
+  pale: "#B89A58",
 };
 
-/**
- * Twisted jute rope — three helical fiber strands, not a smooth wire.
- */
-export function drawJuteRope(
+/** Draw one visible helix run as matte jute */
+export function drawJuteRun(
   ctx: CanvasRenderingContext2D,
-  points: Vec2[],
+  points: HelixPoint[],
   width: number,
   slack = 0,
 ) {
   if (points.length < 2) return;
 
-  // Precompute tangents + arc lengths
-  const segs: {
-    x: number;
-    y: number;
-    tx: number;
-    ty: number;
-    nx: number;
-    ny: number;
-    s: number;
-  }[] = [];
-  let s = 0;
-  for (let i = 0; i < points.length; i++) {
-    const p = points[i];
+  const segs = points.map((p, i) => {
     const prev = points[Math.max(0, i - 1)];
     const next = points[Math.min(points.length - 1, i + 1)];
     let tx = next.x - prev.x;
@@ -164,34 +230,32 @@ export function drawJuteRope(
     ty /= mag;
     const nx = -ty;
     const ny = tx;
-    if (i > 0) s += Math.hypot(p.x - prev.x, p.y - prev.y);
-    const wobble = Math.sin(i * 0.35 + slack * 6) * slack * 3;
-    segs.push({
+    const wobble = Math.sin(i * 0.4 + slack * 5) * slack * 2;
+    // Foreshortening: front (depth>0) slightly thicker
+    const scale = 0.82 + 0.22 * Math.max(0, p.depth);
+    return {
       x: p.x + nx * wobble,
       y: p.y + ny * wobble,
-      tx,
-      ty,
       nx,
       ny,
-      s,
-    });
-  }
+      s: p.s,
+      w: width * scale,
+    };
+  });
 
   ctx.save();
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 
-  // Soft contact shadow (no blur filter — cheaper)
   ctx.beginPath();
-  ctx.moveTo(segs[0].x + 1.5, segs[0].y + 2.5);
+  ctx.moveTo(segs[0].x + 2, segs[0].y + 3);
   for (let i = 1; i < segs.length; i++) {
-    ctx.lineTo(segs[i].x + 1.5, segs[i].y + 2.5);
+    ctx.lineTo(segs[i].x + 2, segs[i].y + 3);
   }
-  ctx.strokeStyle = "rgba(40, 28, 10, 0.28)";
+  ctx.strokeStyle = "rgba(0,0,0,0.5)";
   ctx.lineWidth = width + 3;
   ctx.stroke();
 
-  // Core body
   ctx.beginPath();
   ctx.moveTo(segs[0].x, segs[0].y);
   for (let i = 1; i < segs.length; i++) ctx.lineTo(segs[i].x, segs[i].y);
@@ -199,11 +263,8 @@ export function drawJuteRope(
   ctx.lineWidth = width;
   ctx.stroke();
 
-  // Three twisted fiber strands
-  const strandColors = [JUTE.mid, JUTE.light, JUTE.shadow];
-  const twist = 0.22; // radians per px
-  const amp = width * 0.32;
-
+  const colors = [JUTE.fiber, JUTE.mid, JUTE.deepest];
+  const twist = 0.2;
   for (let strand = 0; strand < 3; strand++) {
     const phase0 = (strand * Math.PI * 2) / 3;
     ctx.beginPath();
@@ -211,59 +272,51 @@ export function drawJuteRope(
     for (let i = 0; i < segs.length; i++) {
       const g = segs[i];
       const phase = g.s * twist + phase0;
-      const r = amp * (0.85 + 0.15 * Math.sin(g.s * 0.08 + strand));
-      const ox = g.x + g.nx * Math.cos(phase) * r;
-      const oy = g.y + g.ny * Math.cos(phase) * r;
+      const amp = g.w * 0.32;
+      const ox = g.x + g.nx * Math.cos(phase) * amp;
+      const oy = g.y + g.ny * Math.cos(phase) * amp;
       if (!started) {
         ctx.moveTo(ox, oy);
         started = true;
-      } else {
-        ctx.lineTo(ox, oy);
-      }
+      } else ctx.lineTo(ox, oy);
     }
-    ctx.strokeStyle = strandColors[strand];
-    ctx.lineWidth = width * 0.38;
-    ctx.globalAlpha = strand === 2 ? 0.55 : 0.85;
+    ctx.strokeStyle = colors[strand];
+    ctx.globalAlpha = 0.85;
+    ctx.lineWidth = width * 0.3;
     ctx.stroke();
-  }
-
-  // Fiber flecks along the rope (jute roughness)
-  ctx.globalAlpha = 0.5;
-  const step = Math.max(2, Math.floor(segs.length / 80));
-  for (let i = 0; i < segs.length; i += step) {
-    const g = segs[i];
-    const phase = g.s * twist;
-    const fleck = ((i * 13) % 7) / 7;
-    const ox = g.x + g.nx * Math.cos(phase + fleck) * amp * 0.9;
-    const oy = g.y + g.ny * Math.cos(phase + fleck) * amp * 0.9;
-    ctx.fillStyle = fleck > 0.5 ? JUTE.highlight : JUTE.shadow;
-    ctx.beginPath();
-    ctx.arc(ox, oy, width * 0.08, 0, Math.PI * 2);
-    ctx.fill();
   }
   ctx.globalAlpha = 1;
 
-  // Specular ridge on the lit side of the twist
-  ctx.beginPath();
-  let lit = false;
-  for (let i = 0; i < segs.length; i++) {
+  const step = Math.max(3, Math.floor(segs.length / 50));
+  for (let i = 0; i < segs.length; i += step) {
     const g = segs[i];
     const phase = g.s * twist;
-    if (Math.cos(phase) < 0.15) continue;
-    const ox = g.x + g.nx * Math.cos(phase) * amp * 0.55;
-    const oy = g.y + g.ny * Math.cos(phase) * amp * 0.55;
-    if (!lit) {
-      ctx.moveTo(ox, oy);
-      lit = true;
-    } else {
-      ctx.lineTo(ox, oy);
-    }
+    const amp = g.w * 0.3;
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = (i * 5) % 2 === 0 ? JUTE.pale : JUTE.deepest;
+    ctx.beginPath();
+    ctx.arc(
+      g.x + g.nx * Math.cos(phase) * amp,
+      g.y + g.ny * Math.cos(phase) * amp,
+      width * 0.06,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
   }
-  ctx.strokeStyle = "rgba(255, 240, 200, 0.35)";
-  ctx.lineWidth = width * 0.12;
-  ctx.stroke();
-
+  ctx.globalAlpha = 1;
   ctx.restore();
+}
+
+export function drawJuteRope(
+  ctx: CanvasRenderingContext2D,
+  runs: HelixPoint[][],
+  width: number,
+  slack = 0,
+) {
+  for (const run of runs) {
+    if (run.length >= 2) drawJuteRun(ctx, run, width, slack);
+  }
 }
 
 export function drawLooseTip(
@@ -273,50 +326,28 @@ export function drawLooseTip(
   tangent?: Vec2,
 ) {
   ctx.save();
-  drawSoftEllipse(
-    ctx,
-    tip.x + 1.5,
-    tip.y + 2.5,
-    width * 1.1,
-    width * 0.55,
-    "rgba(30, 20, 8, 0.35)",
-  );
-
-  // Frayed rope tip — short fiber whiskers
+  drawSoftEllipse(ctx, tip.x + 1.5, tip.y + 2.5, width, width * 0.5, "rgba(0,0,0,0.45)");
   const tx = tangent?.x ?? 0;
   const ty = tangent?.y ?? 1;
   const nx = -ty;
   const ny = tx;
-  for (let i = -2; i <= 2; i++) {
+  for (let i = -3; i <= 3; i++) {
     ctx.beginPath();
-    ctx.moveTo(tip.x + nx * i * 1.2, tip.y + ny * i * 1.2);
+    ctx.moveTo(tip.x + nx * i * 1.1, tip.y + ny * i * 1.1);
     ctx.lineTo(
-      tip.x + tx * (width * 0.9) + nx * i * 2.2,
-      tip.y + ty * (width * 0.9) + ny * i * 2.2,
+      tip.x + tx * width * 1.15 + nx * i * 2.5,
+      tip.y + ty * width * 1.15 + ny * i * 2.5,
     );
-    ctx.strokeStyle = i % 2 === 0 ? JUTE.light : JUTE.mid;
-    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = i % 2 === 0 ? JUTE.fiber : JUTE.dark;
+    ctx.lineWidth = 1.2;
     ctx.lineCap = "round";
     ctx.stroke();
   }
-
-  const g = ctx.createRadialGradient(
-    tip.x - 2,
-    tip.y - 2,
-    1,
-    tip.x,
-    tip.y,
-    width * 0.7,
-  );
-  g.addColorStop(0, JUTE.highlight);
-  g.addColorStop(0.5, JUTE.mid);
-  g.addColorStop(1, JUTE.dark);
   ctx.beginPath();
-  ctx.arc(tip.x, tip.y, width * 0.55, 0, Math.PI * 2);
-  ctx.fillStyle = g;
+  ctx.arc(tip.x, tip.y, width * 0.45, 0, Math.PI * 2);
+  ctx.fillStyle = JUTE.mid;
   ctx.fill();
   ctx.restore();
 }
 
-// Keep alias for older imports
 export const drawCord = drawJuteRope;

@@ -17,8 +17,13 @@ export function ProjectSection({
     <section id="work" className="section work" aria-labelledby="work-heading">
       <SectionLabel index="02" label="WORK" progress={local} />
 
-      <div className="work__grid">
-        <div className="work__intro" data-stitch-content data-stitch-id="work-intro">
+      <div className="seam-layout">
+        <div
+          className="seam-layout__left"
+          data-stitch-content
+          data-stitch-id="work-intro"
+          data-side="left"
+        >
           <h2 id="work-heading" className="section-title">
             Selected Work
           </h2>
@@ -38,21 +43,26 @@ export function ProjectSection({
                 className="work__swatch fabric-patch"
                 data-stitch-content
                 data-stitch-id={`swatch-${p.slug}`}
+                data-side="left"
               >
-                <ProjectIcon name={p.icon} className="text-accent" size={28} />
+                <ProjectIcon name={p.icon} className="text-accent" size={24} />
                 <span>{p.name}</span>
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="work__list">
+        <div className="seam-layout__corridor" aria-hidden />
+
+        <div className="seam-layout__right work__list">
           {featuredProjects.map((project, i) => (
             <article
               key={project.slug}
               className="work__row"
               style={{
-                ["--settle" as string]: String(Math.min(1, local * 1.4 - i * 0.15)),
+                ["--settle" as string]: String(
+                  Math.min(1, local * 1.4 - i * 0.15),
+                ),
               }}
             >
               <FabricPatch
@@ -61,6 +71,7 @@ export function ProjectSection({
                 href={`/work/${project.slug}`}
                 data-stitch-content
                 data-stitch-id={`project-${project.slug}`}
+                data-side="right"
               >
                 <div className="work__card-body">
                   <span className="work__index">
@@ -74,14 +85,13 @@ export function ProjectSection({
                     ))}
                   </ul>
                 </div>
-              </FabricPatch>
-
-              <FabricPatch
-                className="work__icon-block"
-                data-stitch-content
-                data-stitch-id={`icon-${project.slug}`}
-              >
-                <ProjectIcon name={project.icon} className="text-accent" size={56} />
+                <div className="work__card-icon" aria-hidden>
+                  <ProjectIcon
+                    name={project.icon}
+                    className="text-accent"
+                    size={40}
+                  />
+                </div>
               </FabricPatch>
             </article>
           ))}
