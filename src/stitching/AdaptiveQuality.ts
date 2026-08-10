@@ -1,6 +1,6 @@
 /**
  * Adaptive quality ladder for the stitch renderer.
- * Drops detail when rolling FPS falls below threshold.
+ * Drops cord/grommet detail when rolling FPS falls below threshold.
  */
 export class AdaptiveQuality {
   private samples: number[] = [];
@@ -24,10 +24,11 @@ export class AdaptiveQuality {
     const avg =
       this.samples.reduce((a, b) => a + b, 0) / this.samples.length;
 
-    if (avg < 52 && this.level > 0) {
+    // Prefer staying high; drop quickly under load, recover when stable
+    if (avg < 45 && this.level > 0) {
       this.level = (this.level - 1) as 0 | 1 | 2;
       this.samples = [];
-    } else if (avg > 58 && this.level < 2) {
+    } else if (avg > 55 && this.level < 2) {
       this.level = (this.level + 1) as 0 | 1 | 2;
       this.samples = [];
     }
@@ -41,5 +42,9 @@ export class AdaptiveQuality {
 
   get shadowEnabled() {
     return this.level >= 1;
+  }
+
+  get cordStrands() {
+    return [0, 2, 4][this.level];
   }
 }

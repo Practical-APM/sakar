@@ -23,7 +23,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
 
     let raf = 0;
     let start = 0;
-    const duration = 1600;
+    const duration = 900;
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -60,26 +60,26 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
       ctx.fillStyle = "rgba(0,0,0,0.18)";
       ctx.fill();
 
-      // End caps
+      // End caps — wood spool
       for (const side of [-1, 1]) {
         ctx.beginPath();
         ctx.ellipse(side * 38, 0, 10, 34, 0, 0, Math.PI * 2);
         const cap = ctx.createLinearGradient(side * 38 - 10, -34, side * 38 + 10, 34);
-        cap.addColorStop(0, "#5C4018");
-        cap.addColorStop(0.5, "#A88830");
-        cap.addColorStop(1, "#3D2A10");
+        cap.addColorStop(0, "#efe4ce");
+        cap.addColorStop(0.5, "#d4bc94");
+        cap.addColorStop(1, "#a89068");
         ctx.fillStyle = cap;
         ctx.fill();
       }
 
-      // Wound thread cylinder
+      // Wound jute cylinder — sandy natural jute
       ctx.save();
       ctx.rotate(angle * 0.15);
       for (let i = 0; i < 14; i++) {
         const yy = -28 + i * 4.2;
         ctx.beginPath();
         ctx.ellipse(0, yy, 36, 5, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = i % 2 === 0 ? "#7A5C22" : "#4A3514";
+        ctx.strokeStyle = i % 2 === 0 ? "#d4bc94" : "#b09a72";
         ctx.lineWidth = 3.2;
         ctx.stroke();
       }
@@ -88,11 +88,11 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
       // Axle
       ctx.beginPath();
       ctx.arc(0, 0, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "#2A1E0C";
+      ctx.fillStyle = "#3d2a14";
       ctx.fill();
       ctx.restore();
 
-      // Falling rope — length grows with t
+      // Falling jute cord
       const fall = Math.min(h * 0.55, 40 + t * h * 0.62);
       const sway = Math.sin(now * 0.003) * 8 * (1 - t * 0.5);
       ctx.save();
@@ -105,7 +105,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
         cx + sway * 0.3,
         cy + fall,
       );
-      ctx.strokeStyle = "rgba(0,0,0,0.35)";
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
       ctx.lineWidth = 14;
       ctx.stroke();
 
@@ -117,11 +117,10 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
         cx + sway * 0.3,
         cy + fall,
       );
-      ctx.strokeStyle = "#4A3514";
-      ctx.lineWidth = 11;
+      ctx.strokeStyle = "#b09a72";
+      ctx.lineWidth = 7;
       ctx.stroke();
 
-      // Fiber strands on falling rope
       for (let s = 0; s < 3; s++) {
         ctx.beginPath();
         ctx.moveTo(cx + 18 + s, cy + 30);
@@ -131,20 +130,18 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
           cx + sway * 0.3 + (s - 1) * 2,
           cy + fall,
         );
-        ctx.strokeStyle = s === 1 ? "#9A7830" : "#7A5C22";
-        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = s === 1 ? "#efe4ce" : "#a89068";
+        ctx.lineWidth = 2.5;
         ctx.globalAlpha = 0.8;
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
 
-      // Tip
       ctx.beginPath();
-      ctx.arc(cx + sway * 0.3, cy + fall, 5, 0, Math.PI * 2);
-      ctx.fillStyle = "#7A5C22";
+      ctx.arc(cx + sway * 0.3, cy + fall, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#c4a878";
       ctx.fill();
 
-      // Mark
       ctx.fillStyle = "#20231F";
       ctx.font = "500 28px Georgia, serif";
       ctx.textAlign = "center";
@@ -157,7 +154,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
       if (t >= 1 && !doneRef.current) {
         doneRef.current = true;
         setHiding(true);
-        window.setTimeout(() => onComplete(1), 420);
+        window.setTimeout(() => onComplete(1), 320);
       } else {
         raf = requestAnimationFrame(paint);
       }

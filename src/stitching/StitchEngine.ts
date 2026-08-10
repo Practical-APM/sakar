@@ -1,20 +1,18 @@
 import type { ContentRect, Hole, SeamPoint, Vec2 } from "@/types";
 import { DEBUG_STITCHING, HOLES } from "./constants";
 import {
-  buildHelixStitch,
+  buildPathThroughHoles,
   computePairTightness,
+  generatePairs,
   offsetForY,
+  placeHoles,
   sliceHelixByLength,
-  visibleRuns,
+  splitHelixRuns,
   type HelixPoint,
+  type PairDef,
   type PairTightness,
 } from "./HelixPath";
-import {
-  buildClothPolygons,
-  generateSeam,
-  getCorridorRadius,
-  seamXAtY,
-} from "./SeamGenerator";
+import { generateSeam, getCorridorRadius } from "./SeamGenerator";
 import { ThreadPhysics } from "./ThreadPhysics";
 
 export interface StitchSnapshot {
@@ -22,12 +20,12 @@ export interface StitchSnapshot {
   holes: Hole[];
   visiblePath: Vec2[];
   visibleRuns: HelixPoint[][];
+  /** Rear helix segments (through the void) — drawn behind */
+  backRuns: HelixPoint[][];
   tip: HelixPoint | null;
   progress: number;
   completedHoleCount: number;
-  /** Global average gap for void width */
   seamGap: number;
-  /** Local gap samples along seam for variable void */
   gapProfile: { y: number; gap: number }[];
   pairTightness: PairTightness[];
   corridorRadius: number;
@@ -35,25 +33,18 @@ export interface StitchSnapshot {
   totalLength: number;
   slack: number;
   velocity: number;
-  cloth: ReturnType<typeof buildClothPolygons>;
+}
+
+function spacing(vw: number) {
+  if (vw < 640) return 38;
+  if (vw < 1024) return 44;
+  return 50;
 }
 
 function openOffset(vw: number) {
-  if (vw < 640) return 20;
-  if (vw < 1024) return 28;
-  return HOLES.offsetFromSeam;
-}
-
-function helixRadius(vw: number) {
   if (vw < 640) return 22;
-  if (vw < 1024) return 36;
-  return 52;
-}
-
-function helixPitch(vw: number) {
-  if (vw < 640) return 48;
-  if (vw < 1024) return 58;
-  return 68;
+  if (vw < 1024) return 28;
+  return 32;
 }
 
 function holeRadius(vw: number) {
@@ -62,20 +53,23 @@ function holeRadius(vw: number) {
   return HOLES.radiusDesktop;
 }
 
+/**
+ * Live pull-in every frame (no quantized tension lag).
+ * Open-path arc lengths are cached once for stable progress → tightness.
+ */
 export class StitchEngine {
   private physics = new ThreadPhysics();
   private seam: SeamPoint[] = [];
-  private helixPoints: HelixPoint[] = [];
-  private cumulativeLengths: number[] = [];
-  private holeArcLengths: number[] = [];
-  private holes: Hole[] = [];
-  private pairs: ReturnType<typeof buildHelixStitch>["pairs"] = [];
-  private totalLength = 0;
+  private baseHoles: Hole[] = [];
+  private pairs: PairDef[] = [];
   private width = 0;
   private height = 0;
   private lastTime = 0;
-  private openOff = 36;
-  private closedOff = 14;
+  private openOff = 42;
+  private closedOff = 13;
+
+  private openArcLengths: number[] = [];
+  private openTotalLength = 1;
 
   rebuild(options: {
     width: number;
@@ -84,32 +78,30 @@ export class StitchEngine {
   }) {
     this.width = options.width;
     this.height = options.height;
-    const rects = options.contentRects ?? [];
 
     this.seam = generateSeam({
       height: this.height,
       viewportWidth: this.width,
-      contentRects: rects,
+      contentRects: options.contentRects ?? [],
     });
 
     this.openOff = openOffset(this.width);
-    this.closedOff = Math.max(10, this.openOff * 0.38);
+    this.closedOff = Math.max(14, this.openOff * 0.38);
 
-    const built = buildHelixStitch({
-      seam: this.seam,
-      height: this.height,
-      radius: helixRadius(this.width),
-      pitch: helixPitch(this.width),
-      holeRadius: holeRadius(this.width),
-      openOffset: this.openOff,
-    });
+    const gen = generatePairs(
+      this.seam,
+      this.height,
+      spacing(this.width),
+      holeRadius(this.width),
+    );
+    this.baseHoles = gen.holes;
+    this.pairs = gen.pairs;
 
-    this.helixPoints = built.points;
-    this.cumulativeLengths = built.cumulativeLengths;
-    this.holeArcLengths = built.holeArcLengths;
-    this.holes = built.holes;
-    this.pairs = built.pairs;
-    this.totalLength = built.totalLength;
+    const openHoles = placeHoles(this.baseHoles, this.seam, [], this.openOff);
+    const openBuilt = buildPathThroughHoles(openHoles, this.seam);
+    this.openArcLengths = openBuilt.holeArcLengths;
+    this.openTotalLength = Math.max(1, openBuilt.totalLength);
+    this.lastTime = 0;
   }
 
   setScrollProgress(progress: number) {
@@ -117,87 +109,68 @@ export class StitchEngine {
   }
 
   private snapshotAt(progress: number): StitchSnapshot {
-    const arcLength = progress * this.totalLength;
-    const sliced = sliceHelixByLength(
-      this.helixPoints,
-      this.cumulativeLengths,
-      arcLength,
-    );
-    const runs = visibleRuns(sliced);
-    const tip = sliced.length ? sliced[sliced.length - 1] : null;
-
-    let completedHoleCount = 0;
-    for (const len of this.holeArcLengths) {
-      if (len <= arcLength) completedHoleCount += 1;
-      else break;
-    }
-
+    const arcGuess = progress * this.openTotalLength;
     const pairTightness = computePairTightness(
       this.pairs,
-      this.holeArcLengths,
-      arcLength,
+      this.openArcLengths,
+      arcGuess,
       this.openOff,
       this.closedOff,
     );
 
-    // Rebuild hole positions with local pull-in
-    const holes: Hole[] = this.holes.map((h) => {
-      const off = offsetForY(pairTightness, h.position.y, this.openOff);
-      const sx = seamXAtY(this.seam, h.position.y);
-      return {
-        ...h,
-        position: {
-          x: h.side === "left" ? sx - off : sx + off,
-          y: h.position.y,
-        },
-      };
-    });
+    // Live rivet positions every frame — cinch tracks the tip immediately
+    const holes = placeHoles(
+      this.baseHoles,
+      this.seam,
+      pairTightness,
+      this.openOff,
+    );
+    const built = buildPathThroughHoles(holes, this.seam);
+    const arcLength = progress * built.totalLength;
 
-    // Variable gap along seam from local tightness
-    const gapProfile: { y: number; gap: number }[] = [];
-    const maxGap = this.openOff * 1.15;
-    const minGap = this.closedOff * 0.85;
-    for (let y = 0; y < this.height; y += 24) {
-      const off = offsetForY(pairTightness, y, this.openOff);
-      const t = (this.openOff - off) / Math.max(1e-6, this.openOff - this.closedOff);
-      gapProfile.push({
-        y,
-        gap: maxGap - (maxGap - minGap) * Math.min(1, Math.max(0, t)),
-      });
+    const sliced = sliceHelixByLength(
+      built.points,
+      built.cumulativeLengths,
+      arcLength,
+    );
+    const { front, back } = splitHelixRuns(sliced);
+    const tip = sliced.length ? sliced[sliced.length - 1] : null;
+
+    let completedHoleCount = 0;
+    for (const len of built.holeArcLengths) {
+      if (len <= arcLength) completedHoleCount += 1;
+      else break;
     }
 
-    const avgGap =
+    const gapProfile: { y: number; gap: number }[] = [];
+    const step = Math.max(24, Math.floor(this.height / 90));
+    for (let y = 0; y < this.height; y += step) {
+      const off = offsetForY(pairTightness, y, this.openOff);
+      gapProfile.push({ y, gap: off * 2 * 0.95 });
+    }
+    const offEnd = offsetForY(pairTightness, this.height, this.openOff);
+    gapProfile.push({ y: this.height, gap: offEnd * 2 * 0.95 });
+    const seamGap =
       gapProfile.reduce((a, p) => a + p.gap, 0) /
       Math.max(1, gapProfile.length);
-
-    const cloth = buildClothPolygons(
-      this.seam,
-      this.width,
-      this.height,
-      avgGap,
-    );
-
-    const visiblePath = sliced
-      .filter((p) => !p.occluded)
-      .map((p) => ({ x: p.x, y: p.y }));
 
     return {
       seam: this.seam,
       holes,
-      visiblePath,
-      visibleRuns: runs,
+      visiblePath: [],
+      visibleRuns: front,
+      backRuns: back,
       tip,
       progress,
       completedHoleCount,
-      seamGap: avgGap,
+      seamGap,
       gapProfile,
       pairTightness,
       corridorRadius: getCorridorRadius(this.width),
       debug: DEBUG_STITCHING,
-      totalLength: this.totalLength,
+      totalLength: built.totalLength,
       slack: this.physics.getSlack(),
       velocity: this.physics.velocity,
-      cloth,
     };
   }
 
@@ -213,10 +186,6 @@ export class StitchEngine {
   }
 
   getHoleCount() {
-    return this.holes.length;
-  }
-
-  getPhysicsProgress() {
-    return this.physics.current;
+    return this.baseHoles.length;
   }
 }

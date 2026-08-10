@@ -5,19 +5,19 @@
   --cloth-base: #eee9df;
   --cloth-highlight: #f8f4ec;
   --cloth-shadow: #d8d0c3;
-  --ink-primary: #20231f;
-  --ink-secondary: #777269;
-  --thread: #a97916;
+  --ink-primary: #141612;
+  --ink-secondary: #4a4740;
+  --thread: #8b7355;
   --edge: #b8ae9f;
-  --hole-metal: #c9a227;
-  --accent: #a97916;
+  --hole-metal: #1a1814;
+  --accent: #6b5538;
   --patch-shadow:
     0 18px 40px rgba(55, 42, 18, 0.16),
     0 6px 14px rgba(55, 42, 18, 0.1),
     0 1px 2px rgba(55, 42, 18, 0.08),
     inset 0 1px 0 rgba(255, 252, 245, 0.85),
     inset 0 -10px 18px rgba(180, 160, 120, 0.12);
-  --nav-bg: rgba(248, 244, 236, 0.78);
+  --nav-bg: rgba(248, 244, 236, 0.88);
 }
 
 [data-theme="dark"] {
@@ -76,9 +76,10 @@ body {
   color: var(--ink-primary);
   background: var(--cloth-base);
   font-family: var(--font-body), "Helvetica Neue", sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 17px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a:focus-visible,
@@ -122,98 +123,272 @@ h3 {
   color: var(--accent);
 }
 
-/* ——— Photographic linen (CSS — no per-frame paint) ——— */
-.cloth-photo {
+/* ——— Living two-sheet linen (split by seam) ——— */
+.cloth-stage {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-color: var(--cloth-base);
-  background-image: var(--linen-url);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  --cloth-mx: 0.5;
+  --cloth-my: 0.35;
+  --cloth-left-breath: 0;
+  --cloth-right-breath: 0;
+  background: var(--cloth-base);
 }
 
-.cloth-photo::after {
-  content: "";
+.cloth-sheet {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  /* Fallback split until seam syncs */
+  will-change: clip-path;
+}
+
+.cloth-sheet--left {
+  clip-path: polygon(0 0, 48% 0, 52% 100%, 0 100%);
+}
+
+.cloth-sheet--right {
+  clip-path: polygon(48% 0, 100% 0, 100% 100%, 52% 100%);
+}
+
+.cloth-sheet__weave {
+  position: absolute;
+  /* Oversized so drift / tilt never reveals edges */
+  inset: -8%;
+  background-color: var(--cloth-base);
+  background-image: var(--linen-url);
+  background-repeat: no-repeat;
+  transform-origin: 60% 40%;
+  will-change: transform, background-position;
+}
+
+/* Left sheet — cooler shade, weave shifted, slow drift */
+.cloth-sheet--left .cloth-sheet__weave {
+  background-size: 110% auto;
+  background-position: 18% 42%;
+  filter: saturate(0.92) brightness(0.98) contrast(1.03);
+  animation: cloth-weave-drift-left 16s ease-in-out infinite alternate;
+}
+
+/* Right sheet — warmer, different weave crop, opposite rhythm */
+.cloth-sheet--right .cloth-sheet__weave {
+  background-size: 114% auto;
+  background-position: 72% 58%;
+  filter: saturate(1.06) brightness(1.025) sepia(0.07) contrast(1.02);
+  transform-origin: 40% 55%;
+  animation: cloth-weave-drift-right 19s ease-in-out infinite alternate;
+}
+
+@keyframes cloth-weave-drift-left {
+  0% {
+    background-position: 14% 38%;
+  }
+  100% {
+    background-position: 24% 48%;
+  }
+}
+
+@keyframes cloth-weave-drift-right {
+  0% {
+    background-position: 68% 52%;
+  }
+  100% {
+    background-position: 78% 64%;
+  }
+}
+
+/* Moving crease ribbons — different angles & tempos per sheet */
+.cloth-sheet__creases {
+  position: absolute;
+  inset: -8%;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  will-change: transform, opacity;
+}
+
+.cloth-sheet--left .cloth-sheet__creases {
   background:
-    /* Soft folds / drape */
     radial-gradient(
-      55% 35% at 18% 22%,
-      rgba(40, 30, 18, 0.1),
+      42% 28% at calc(28% + var(--cloth-left-breath) * 6%) calc(34% + var(--cloth-left-breath) * 4%),
+      rgba(55, 42, 28, 0.16),
       transparent 70%
     ),
     radial-gradient(
-      45% 40% at 82% 58%,
-      rgba(40, 30, 18, 0.09),
-      transparent 65%
-    ),
-    radial-gradient(
-      60% 30% at 40% 88%,
-      rgba(30, 22, 12, 0.08),
-      transparent 60%
-    ),
-    linear-gradient(
-      105deg,
-      transparent 42%,
-      rgba(255, 250, 240, 0.07) 48%,
-      transparent 54%
-    ),
-    linear-gradient(
-      78deg,
-      transparent 58%,
-      rgba(40, 30, 18, 0.06) 62%,
+      36% 40% at calc(55% - var(--cloth-left-breath) * 5%) calc(70% + var(--cloth-left-breath) * 3%),
+      rgba(40, 30, 18, 0.12),
       transparent 68%
     ),
+    linear-gradient(
+      118deg,
+      transparent 28%,
+      rgba(255, 250, 240, 0.22) 36%,
+      transparent 44%,
+      rgba(48, 36, 22, 0.1) 58%,
+      transparent 68%
+    ),
+    linear-gradient(
+      52deg,
+      transparent 40%,
+      rgba(60, 45, 28, 0.09) 48%,
+      transparent 58%
+    );
+  animation: cloth-crease-left 18s ease-in-out infinite alternate;
+}
+
+.cloth-sheet--right .cloth-sheet__creases {
+  background:
     radial-gradient(
-      90% 70% at 50% 30%,
-      rgba(255, 252, 245, 0.18),
-      transparent 60%
+      38% 32% at calc(65% + var(--cloth-right-breath) * 5%) calc(28% - var(--cloth-right-breath) * 4%),
+      rgba(50, 38, 24, 0.14),
+      transparent 72%
     ),
     radial-gradient(
-      80% 80% at 50% 100%,
-      rgba(50, 40, 25, 0.1),
-      transparent 50%
+      44% 26% at calc(40% - var(--cloth-right-breath) * 6%) calc(78% + var(--cloth-right-breath) * 3%),
+      rgba(42, 32, 20, 0.13),
+      transparent 65%
+    ),
+    linear-gradient(
+      72deg,
+      transparent 32%,
+      rgba(255, 252, 245, 0.18) 42%,
+      transparent 50%,
+      rgba(55, 42, 28, 0.11) 62%,
+      transparent 72%
+    ),
+    linear-gradient(
+      155deg,
+      transparent 45%,
+      rgba(48, 36, 22, 0.08) 55%,
+      transparent 65%
     );
+  animation: cloth-crease-right 22s ease-in-out infinite alternate;
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
+}
+
+@keyframes cloth-crease-left {
+  0% {
+    transform: translate3d(-2%, 1%, 0) rotate(-0.6deg) scale(1.02);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(3%, -2%, 0) rotate(0.8deg) scale(1.06);
+    opacity: 0.95;
+  }
+}
+
+@keyframes cloth-crease-right {
+  0% {
+    transform: translate3d(2%, -1%, 0) rotate(0.7deg) scale(1.03);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-3%, 2%, 0) rotate(-0.5deg) scale(1.07);
+    opacity: 1;
+  }
+}
+
+/* Soft folded lip along the seam edge of each sheet */
+.cloth-sheet__lip {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cloth-sheet--left .cloth-sheet__lip {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 72%,
+    rgba(255, 250, 240, 0.14) 88%,
+    rgba(40, 30, 18, 0.12) 100%
+  );
+}
+
+.cloth-sheet--right .cloth-sheet__lip {
+  background: linear-gradient(
+    270deg,
+    transparent 0%,
+    transparent 72%,
+    rgba(255, 248, 235, 0.1) 88%,
+    rgba(35, 26, 16, 0.14) 100%
+  );
+}
+
+.cloth-stage--static .cloth-sheet__weave,
+.cloth-stage--static .cloth-sheet__creases {
+  animation: none !important;
+}
+
+.cloth-lighting {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      70% 55% at calc(var(--cloth-mx) * 40% + 8%) calc(var(--cloth-my) * 30% + 4%),
+      rgba(255, 248, 230, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      85% 70% at 50% 100%,
+      rgba(40, 30, 18, 0.07),
+      transparent 55%
+    );
+  mix-blend-mode: soft-light;
+}
+
+[data-theme="dark"] .cloth-lighting {
+  background:
+    radial-gradient(
+      70% 55% at calc(var(--cloth-mx) * 40% + 8%) calc(var(--cloth-my) * 30% + 4%),
+      rgba(255, 230, 180, 0.06),
+      transparent 55%
+    ),
+    radial-gradient(
+      85% 70% at 50% 100%,
+      rgba(0, 0, 0, 0.22),
+      transparent 55%
+    );
+  mix-blend-mode: overlay;
 }
 
 .cloth-grain {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 3;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: multiply;
 }
 
-.cloth-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.cloth-canvas--light {
-  z-index: 4;
-  mix-blend-mode: soft-light;
+[data-theme="dark"] .cloth-grain {
+  opacity: 0.06;
+  mix-blend-mode: overlay;
 }
 
 .cloth-void,
+.cloth-canvas,
+.cloth-canvas--light,
 .cloth-canvas--grain,
-.cloth-atmosphere {
+.cloth-atmosphere,
+.cloth-gl,
+.cloth-photo {
   display: none;
 }
 
 .stitch-canvas {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 2;
+  width: 100%;
+  height: 100%;
+  /* Viewport-sized; world coords shifted by -scrollY in the draw loop */
+  z-index: 6;
   pointer-events: none;
 }
 
@@ -238,12 +413,15 @@ h3 {
   background-size: 420px auto;
   background-position: center;
   box-shadow:
-    0 18px 40px rgba(40, 28, 12, 0.16),
-    0 4px 12px rgba(40, 28, 12, 0.08),
-    inset 0 1px 0 rgba(255, 252, 245, 0.55);
-  border: 1px solid color-mix(in srgb, var(--edge) 50%, transparent);
+    0 22px 48px rgba(40, 28, 12, 0.18),
+    0 8px 18px rgba(40, 28, 12, 0.1),
+    0 1px 2px rgba(40, 28, 12, 0.06),
+    inset 0 1px 0 rgba(255, 252, 245, 0.7),
+    inset 0 -12px 20px rgba(160, 140, 100, 0.1);
+  border: 1px solid color-mix(in srgb, var(--edge) 45%, transparent);
   border-radius: 10px;
   will-change: transform;
+  /* transform is scroll-driven — only shadow transitions on hover */
   transition: box-shadow 280ms ease;
 }
 
@@ -253,22 +431,32 @@ h3 {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(
-    150deg,
-    rgba(255, 252, 245, 0.45) 0%,
-    transparent 45%,
-    rgba(80, 60, 30, 0.08) 100%
-  );
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 245, 0.5) 0%,
+      transparent 42%,
+      rgba(70, 52, 28, 0.1) 100%
+    ),
+    radial-gradient(
+      80% 60% at 20% 15%,
+      rgba(255, 250, 240, 0.25),
+      transparent 55%
+    );
 }
 
 .fabric-patch::after {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: 3px;
   z-index: 0;
   pointer-events: none;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255, 250, 240, 0.25);
+  border-radius: calc(10px - 2px);
+  /* Stitched edge suggestion */
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 250, 240, 0.28),
+    0 0 0 1px rgba(140, 120, 90, 0.12);
+  border: 1px dashed color-mix(in srgb, var(--edge) 35%, transparent);
 }
 
 .fabric-patch > * {
@@ -306,6 +494,10 @@ h3 {
 [data-stitch-content] {
   will-change: transform;
   transform-origin: center center;
+  /* Scroll-linked via --pull-* set by StitchLayer — no CSS transition lag */
+  transform: translate3d(var(--pull-x, 0px), var(--pull-y, 0px), 0)
+    rotate(var(--pull-r, 0deg));
+  transition: none;
 }
 
 /* ——— Navigation ——— */
@@ -341,15 +533,18 @@ h3 {
 }
 
 .nav__link {
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-secondary);
-  transition: color 200ms ease;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  color: var(--ink-primary);
+  font-weight: 500;
+  opacity: 0.78;
+  transition: color 200ms ease, opacity 200ms ease;
 }
 
 .nav__link:hover,
 .nav__link:focus-visible {
   color: var(--ink-primary);
+  opacity: 1;
 }
 
 .nav__menu {
@@ -421,28 +616,31 @@ h3 {
 .section-title {
   font-size: clamp(2rem, 4vw, 3rem);
   margin: 0 0 0.75rem;
+  font-weight: 600;
+  color: var(--ink-primary);
 }
 
 .section-lede {
   max-width: 28ch;
   color: var(--ink-secondary);
   margin: 0 0 1.25rem;
-  font-size: 0.98rem;
+  font-size: 1.02rem;
+  line-height: 1.6;
 }
 
 .eyebrow {
   margin: 0 0 0.85rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .accent-italic {
   font-style: italic;
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .text-cta {
@@ -475,10 +673,11 @@ h3 {
 .section-label__text {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 0.68rem;
-  letter-spacing: 0.22em;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink-secondary);
+  font-weight: 500;
 }
 
 .section-label__track {
@@ -512,9 +711,9 @@ h3 {
   display: grid;
   grid-template-columns:
     minmax(0, 1fr)
-    clamp(200px, 22vw, 300px)
-    minmax(0, 1.15fr);
-  gap: clamp(0.75rem, 2vw, 1.5rem);
+    clamp(260px, 28vw, 340px)
+    minmax(0, 1fr);
+  gap: clamp(0.5rem, 1.5vw, 1.25rem);
   align-items: start;
   width: 100%;
 }
@@ -524,12 +723,19 @@ h3 {
   min-height: 1px;
 }
 
+.seam-layout__left,
+.seam-layout__right {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .seam-layout__left {
   max-width: 36rem;
+  justify-self: end;
 }
 
 .seam-layout__right {
-  min-width: 0;
+  justify-self: start;
 }
 
 /* ——— Hero ——— */
@@ -546,33 +752,41 @@ h3 {
 }
 
 .hero__title {
-  font-size: clamp(2.2rem, 4.8vw, 3.6rem);
+  font-size: clamp(2.35rem, 5vw, 3.75rem);
   margin: 0 0 1.25rem;
   max-width: 13ch;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+  text-shadow: 0 1px 0 rgba(255, 252, 245, 0.55);
 }
 
 .hero__bio {
-  max-width: 34ch;
+  max-width: 36ch;
   color: var(--ink-secondary);
   margin: 0 0 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  font-weight: 400;
 }
 
 .hero__signature {
   font-family: var(--font-signature), cursive;
-  font-size: 2rem;
+  font-size: 2.15rem;
   margin: 0 0 2rem;
   color: var(--ink-primary);
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .scroll-cta {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
+  font-weight: 600;
 }
 
 .scroll-cta__dot {
@@ -614,9 +828,10 @@ h3 {
 
 .hero__patch-text {
   margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--ink-secondary);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-primary);
+  font-weight: 500;
 }
 
 /* ——— Work ——— */
@@ -649,21 +864,16 @@ h3 {
   gap: 0.85rem;
 }
 
-.work__row {
-  transform: translateX(
-      calc((1 - clamp(0, var(--settle, 1), 1)) * 10px)
-    )
-    rotate(calc((1 - clamp(0, var(--settle, 1), 1)) * 0.6deg));
-  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
 .work__card {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.75rem;
   align-items: center;
-  padding: 1rem 1.1rem;
+  padding: 0.85rem 1rem;
   border-radius: 8px;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .work__card-body {
@@ -678,12 +888,15 @@ h3 {
 
 .work__name {
   margin: 0.25rem 0 0.4rem;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink-primary);
 }
 
 .work__desc {
   margin: 0 0 0.65rem;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
   color: var(--ink-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 2;

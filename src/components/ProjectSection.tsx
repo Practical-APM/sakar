@@ -59,19 +59,14 @@ export function ProjectSection({
             <article
               key={project.slug}
               className="work__row"
-              style={{
-                ["--settle" as string]: String(
-                  Math.min(1, local * 1.4 - i * 0.15),
-                ),
-              }}
+              data-stitch-content
+              data-stitch-id={`project-${project.slug}`}
+              data-side="right"
             >
               <FabricPatch
                 className="work__card"
                 as="a"
                 href={`/work/${project.slug}`}
-                data-stitch-content
-                data-stitch-id={`project-${project.slug}`}
-                data-side="right"
               >
                 <div className="work__card-body">
                   <span className="work__index">

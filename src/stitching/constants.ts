@@ -36,21 +36,21 @@ export const SEAM = {
 } as const;
 
 export const HOLES = {
-  spacingDesktop: 52,
-  spacingTablet: 44,
-  spacingMobile: 36,
-  radiusDesktop: 12.5,
-  radiusTablet: 10.5,
-  radiusMobile: 9,
-  offsetFromSeam: 38,
+  spacingDesktop: 44,
+  spacingTablet: 38,
+  spacingMobile: 30,
+  radiusDesktop: 4.5,
+  radiusTablet: 4,
+  radiusMobile: 3.5,
+  offsetFromSeam: 30,
 } as const;
 
 export const THREAD = {
-  springK: 55,
-  dampingC: 15,
-  strokeWidth: 11,
-  tipRadius: 7,
-  initialProgress: 0.02,
+  springK: 90,
+  dampingC: 18,
+  strokeWidth: 4.2,
+  tipRadius: 2.8,
+  initialProgress: 0.08,
 } as const;
 
 export const DEBUG_STITCHING = false;

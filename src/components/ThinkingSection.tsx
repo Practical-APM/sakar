@@ -43,18 +43,13 @@ export function ThinkingSection({
 
         <div className="seam-layout__right">
           <ul className="thinking__list">
-            {principles.map((p, i) => (
+            {principles.map((p) => (
               <li key={p.id}>
                 <FabricPatch
                   className="thinking__item"
                   data-stitch-content
                   data-stitch-id={`principle-${p.id}`}
                   data-side="right"
-                  style={{
-                    ["--settle" as string]: String(
-                      Math.min(1, local * 1.5 - i * 0.1),
-                    ),
-                  }}
                 >
                   <PrincipleIcon name={p.icon} className="text-accent" size={28} />
                   <p>{p.text}</p>

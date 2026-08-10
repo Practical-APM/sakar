@@ -1,22 +1,8 @@
-import type { Hole, SeamPoint, Vec2 } from "@/types";
 import type { HelixPoint } from "./HelixPath";
-
-function drawSoftEllipse(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  rx: number,
-  ry: number,
-  color: string,
-) {
-  const g = ctx.createRadialGradient(x, y, 0, x, y, Math.max(rx, ry));
-  g.addColorStop(0, color);
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-  ctx.fill();
-}
+import { drawBehindCordRuns, drawCordRuns } from "./CordBrush";
+import { drawGrommetStamp } from "./GrommetAtlas";
+import { seamXAtY } from "./SeamGenerator";
+import type { Hole, SeamPoint, Vec2 } from "@/types";
 
 function gapAt(
   profile: { y: number; gap: number }[],
@@ -25,287 +11,202 @@ function gapAt(
 ) {
   if (!profile.length) return fallback;
   let best = profile[0];
-  let bestD = Math.abs(profile[0].y - y);
+  let bestD = Math.abs(best.y - y);
   for (const p of profile) {
     const d = Math.abs(p.y - y);
     if (d < bestD) {
-      bestD = d;
       best = p;
+      bestD = d;
     }
   }
   return best.gap;
 }
 
-/** Black void between cloth halves — width follows local stitch tension */
+/**
+ * Deep void + frayed cloth lips with soft AO.
+ * Culled to viewport; irregular edge reads as torn linen.
+ */
 export function drawClothSplit(
   ctx: CanvasRenderingContext2D,
   seam: SeamPoint[],
   avgGap: number,
   height: number,
   gapProfile: { y: number; gap: number }[] = [],
+  quality: 0 | 1 | 2 = 2,
+  viewTop = 0,
+  viewBottom = height,
 ) {
   if (seam.length < 2) return;
-
   ctx.save();
+
+  const y0 = Math.max(0, viewTop);
+  const y1 = Math.min(height, viewBottom);
+
+  const fray = (y: number, side: number) => {
+    // Cheap deterministic irregularity — torn linen edge
+    return (
+      Math.sin(y * 0.13 + side) * 1.4 +
+      Math.sin(y * 0.37 + side * 2.1) * 0.9 +
+      Math.sin(y * 0.91 + side * 0.7) * 0.45
+    );
+  };
+
+  const samples: { y: number; xl: number; xr: number }[] = [];
+  const step = quality === 0 ? 20 : quality === 1 ? 12 : 7;
+  for (let y = y0; y <= y1; y += step) {
+    const sx = seamXAtY(seam, y);
+    const g = gapAt(gapProfile, y, avgGap) / 2;
+    const f =
+      quality >= 1 ? fray(y, 1) : 0;
+    samples.push({
+      y,
+      xl: sx - g + (quality >= 1 ? fray(y, -1) * 0.35 : 0),
+      xr: sx + g + f * 0.35,
+    });
+  }
+  {
+    const sx = seamXAtY(seam, y1);
+    const g = gapAt(gapProfile, y1, avgGap) / 2;
+    const last = samples[samples.length - 1];
+    if (!last || Math.abs(last.y - y1) > 1) {
+      samples.push({
+        y: y1,
+        xl: sx - g,
+        xr: sx + g,
+      });
+    }
+  }
+
+  if (samples.length < 2) {
+    ctx.restore();
+    return;
+  }
+
+  // Void fill
   ctx.beginPath();
-  // Left edge of void
-  const half0 = gapAt(gapProfile, seam[0].y, avgGap) / 2;
-  ctx.moveTo(seam[0].x - half0, 0);
-  ctx.lineTo(seam[0].x - half0, seam[0].y);
-  for (let i = 1; i < seam.length; i++) {
-    const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
-    ctx.lineTo(seam[i].x - h, seam[i].y);
+  ctx.moveTo(samples[0].xl, samples[0].y);
+  for (let i = 1; i < samples.length; i++) {
+    ctx.lineTo(samples[i].xl, samples[i].y);
   }
-  const last = seam[seam.length - 1];
-  const halfLast = gapAt(gapProfile, last.y, avgGap) / 2;
-  ctx.lineTo(last.x - halfLast, height);
-  ctx.lineTo(last.x + halfLast, height);
-  for (let i = seam.length - 1; i >= 0; i--) {
-    const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
-    ctx.lineTo(seam[i].x + h, seam[i].y);
+  for (let i = samples.length - 1; i >= 0; i--) {
+    ctx.lineTo(samples[i].xr, samples[i].y);
   }
-  ctx.lineTo(seam[0].x + half0, 0);
   ctx.closePath();
-  ctx.fillStyle = "#050403";
+  ctx.fillStyle = "#030201";
   ctx.fill();
 
-  // Fold lips
-  for (const side of [-1, 1] as const) {
-    ctx.beginPath();
-    ctx.moveTo(seam[0].x + side * half0, seam[0].y);
-    for (let i = 1; i < seam.length; i++) {
-      const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
-      ctx.lineTo(seam[i].x + side * h, seam[i].y);
+  // Inner void vignette (reads as depth into darkness)
+  if (quality >= 1) {
+    ctx.save();
+    ctx.clip();
+    for (let i = 0; i < samples.length; i += 2) {
+      const s = samples[i];
+      const mid = (s.xl + s.xr) / 2;
+      const g = ctx.createRadialGradient(mid, s.y, 0, mid, s.y, 28);
+      g.addColorStop(0, "rgba(0,0,0,0)");
+      g.addColorStop(1, "rgba(0,0,0,0.35)");
+      ctx.fillStyle = g;
+      ctx.fillRect(s.xl - 4, s.y - 8, s.xr - s.xl + 8, 16);
     }
-    ctx.strokeStyle = "rgba(0,0,0,0.35)";
-    ctx.lineWidth = 14;
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(seam[0].x + side * (half0 + 1.5), seam[0].y);
-    for (let i = 1; i < seam.length; i++) {
-      const h = gapAt(gapProfile, seam[i].y, avgGap) / 2;
-      ctx.lineTo(seam[i].x + side * (h + 1.5), seam[i].y);
-    }
-    ctx.strokeStyle = "rgba(255,250,240,0.18)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
+    ctx.restore();
   }
 
-  // Tension creases
-  for (let k = 0; k < 8; k++) {
-    const idx = Math.floor((seam.length * (k + 1)) / 10);
-    const p = seam[idx];
-    if (!p) continue;
-    const prev = seam[Math.max(0, idx - 1)];
-    const next = seam[Math.min(seam.length - 1, idx + 1)];
-    let tx = next.x - prev.x;
-    let ty = next.y - prev.y;
-    const mag = Math.hypot(tx, ty) || 1;
-    tx /= mag;
-    ty /= mag;
-    const nx = -ty;
-    const side = k % 2 === 0 ? -1 : 1;
-    const h = gapAt(gapProfile, p.y, avgGap) / 2;
-    const len = 36 + (k % 3) * 24;
-    ctx.beginPath();
-    ctx.moveTo(p.x + nx * side * (h + 3), p.y);
-    ctx.quadraticCurveTo(
-      p.x + nx * side * (h + len * 0.4) + tx * 10,
-      p.y + ty * 16,
-      p.x + nx * side * (h + len),
-      p.y + ty * (6 + k * 2),
-    );
-    ctx.strokeStyle = `rgba(35, 26, 14, ${0.05 + (k % 3) * 0.02})`;
-    ctx.lineWidth = 9;
-    ctx.stroke();
+  // Cloth AO + pale lip
+  if (quality >= 1) {
+    for (const side of ["l", "r"] as const) {
+      ctx.beginPath();
+      for (let i = 0; i < samples.length; i++) {
+        const x = side === "l" ? samples[i].xl : samples[i].xr;
+        if (i === 0) ctx.moveTo(x, samples[i].y);
+        else ctx.lineTo(x, samples[i].y);
+      }
+      ctx.strokeStyle = "rgba(0,0,0,0.45)";
+      ctx.lineWidth = quality === 2 ? 16 : 11;
+      ctx.lineCap = "round";
+      ctx.stroke();
+
+      // Secondary softer fold
+      ctx.beginPath();
+      for (let i = 0; i < samples.length; i++) {
+        const x =
+          side === "l" ? samples[i].xl - 5 : samples[i].xr + 5;
+        if (i === 0) ctx.moveTo(x, samples[i].y);
+        else ctx.lineTo(x, samples[i].y);
+      }
+      ctx.strokeStyle = "rgba(40,30,18,0.12)";
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      // Catch-light on cloth lip
+      ctx.beginPath();
+      for (let i = 0; i < samples.length; i++) {
+        const x =
+          side === "l" ? samples[i].xl - 2.5 : samples[i].xr + 2.5;
+        if (i === 0) ctx.moveTo(x, samples[i].y);
+        else ctx.lineTo(x, samples[i].y);
+      }
+      ctx.strokeStyle = "rgba(255,248,235,0.22)";
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+    }
+
+    // Micro fiber whiskers along the tear (high quality)
+    if (quality >= 2) {
+      for (let i = 0; i < samples.length; i += 3) {
+        const s = samples[i];
+        for (const side of [-1, 1] as const) {
+          const base = side < 0 ? s.xl : s.xr;
+          const n = ((i * 17 + side) % 10) / 10;
+          ctx.beginPath();
+          ctx.moveTo(base, s.y);
+          ctx.lineTo(base + side * (2 + n * 3), s.y + (n - 0.5) * 2);
+          ctx.strokeStyle = "rgba(210,195,165,0.35)";
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+  } else {
+    for (const side of ["l", "r"] as const) {
+      ctx.beginPath();
+      for (let i = 0; i < samples.length; i++) {
+        const x = side === "l" ? samples[i].xl : samples[i].xr;
+        if (i === 0) ctx.moveTo(x, samples[i].y);
+        else ctx.lineTo(x, samples[i].y);
+      }
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.lineWidth = 8;
+      ctx.stroke();
+    }
   }
 
   ctx.restore();
 }
 
-/** Photoreal brass rivet / eyelet */
 export function drawGrommet(
   ctx: CanvasRenderingContext2D,
   hole: Hole,
   squeeze = 1,
+  quality: 0 | 1 | 2 = 2,
 ) {
-  const { x, y } = hole.position;
-  const R = hole.radius * squeeze;
-
-  ctx.save();
-
-  // Contact shadow into void/cloth
-  drawSoftEllipse(ctx, x + 1.5, y + 3, R * 1.5, R * 0.55, "rgba(0,0,0,0.55)");
-
-  // Outer flange — brushed metal rings
-  const flange = ctx.createRadialGradient(
-    x - R * 0.4,
-    y - R * 0.45,
-    R * 0.05,
-    x,
-    y,
-    R + 3,
+  drawGrommetStamp(
+    ctx,
+    hole.position.x,
+    hole.position.y,
+    hole.radius,
+    quality,
+    squeeze,
   );
-  flange.addColorStop(0, "#F2E2A8");
-  flange.addColorStop(0.18, "#D4B24A");
-  flange.addColorStop(0.42, "#A88820");
-  flange.addColorStop(0.7, "#6E5610");
-  flange.addColorStop(1, "#2E2408");
-
-  ctx.beginPath();
-  ctx.ellipse(x, y + 0.4, R + 2.4, R + 1.9, 0, 0, Math.PI * 2);
-  ctx.fillStyle = flange;
-  ctx.fill();
-
-  // Machined ring groove
-  ctx.beginPath();
-  ctx.arc(x, y, R + 0.3, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(20, 14, 4, 0.55)";
-  ctx.lineWidth = 2.2;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(x, y, R - 0.2, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(255, 230, 160, 0.25)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  // Barrel wall (cylinder into cloth)
-  const barrel = ctx.createRadialGradient(x, y, R * 0.35, x, y, R - 1.5);
-  barrel.addColorStop(0, "#1a150c");
-  barrel.addColorStop(0.55, "#3d3420");
-  barrel.addColorStop(1, "#8a7428");
-  ctx.beginPath();
-  ctx.arc(x, y, Math.max(2.5, R - 1.6), 0, Math.PI * 2);
-  ctx.fillStyle = barrel;
-  ctx.fill();
-
-  // True hole — black void showing through
-  ctx.beginPath();
-  ctx.arc(x, y, Math.max(1.8, R - 3.6), 0, Math.PI * 2);
-  ctx.fillStyle = "#030201";
-  ctx.fill();
-
-  // Tiny anisotropic glint (brushed, not cartoon)
-  ctx.beginPath();
-  ctx.ellipse(
-    x - R * 0.4,
-    y - R * 0.42,
-    R * 0.35,
-    R * 0.1,
-    -0.6,
-    0,
-    Math.PI * 2,
-  );
-  ctx.fillStyle = "rgba(255, 245, 210, 0.35)";
-  ctx.fill();
-
-  ctx.restore();
 }
 
-const JUTE = {
-  deepest: "#241808",
-  dark: "#4A3514",
-  mid: "#7A5C22",
-  fiber: "#9A7830",
-  pale: "#B89A58",
-};
-
-/** Draw one visible helix run as matte jute */
 export function drawJuteRun(
   ctx: CanvasRenderingContext2D,
   points: HelixPoint[],
   width: number,
   slack = 0,
+  quality: 0 | 1 | 2 = 2,
 ) {
-  if (points.length < 2) return;
-
-  const segs = points.map((p, i) => {
-    const prev = points[Math.max(0, i - 1)];
-    const next = points[Math.min(points.length - 1, i + 1)];
-    let tx = next.x - prev.x;
-    let ty = next.y - prev.y;
-    const mag = Math.hypot(tx, ty) || 1;
-    tx /= mag;
-    ty /= mag;
-    const nx = -ty;
-    const ny = tx;
-    const wobble = Math.sin(i * 0.4 + slack * 5) * slack * 2;
-    // Foreshortening: front (depth>0) slightly thicker
-    const scale = 0.82 + 0.22 * Math.max(0, p.depth);
-    return {
-      x: p.x + nx * wobble,
-      y: p.y + ny * wobble,
-      nx,
-      ny,
-      s: p.s,
-      w: width * scale,
-    };
-  });
-
-  ctx.save();
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-
-  ctx.beginPath();
-  ctx.moveTo(segs[0].x + 2, segs[0].y + 3);
-  for (let i = 1; i < segs.length; i++) {
-    ctx.lineTo(segs[i].x + 2, segs[i].y + 3);
-  }
-  ctx.strokeStyle = "rgba(0,0,0,0.5)";
-  ctx.lineWidth = width + 3;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(segs[0].x, segs[0].y);
-  for (let i = 1; i < segs.length; i++) ctx.lineTo(segs[i].x, segs[i].y);
-  ctx.strokeStyle = JUTE.dark;
-  ctx.lineWidth = width;
-  ctx.stroke();
-
-  const colors = [JUTE.fiber, JUTE.mid, JUTE.deepest];
-  const twist = 0.2;
-  for (let strand = 0; strand < 3; strand++) {
-    const phase0 = (strand * Math.PI * 2) / 3;
-    ctx.beginPath();
-    let started = false;
-    for (let i = 0; i < segs.length; i++) {
-      const g = segs[i];
-      const phase = g.s * twist + phase0;
-      const amp = g.w * 0.32;
-      const ox = g.x + g.nx * Math.cos(phase) * amp;
-      const oy = g.y + g.ny * Math.cos(phase) * amp;
-      if (!started) {
-        ctx.moveTo(ox, oy);
-        started = true;
-      } else ctx.lineTo(ox, oy);
-    }
-    ctx.strokeStyle = colors[strand];
-    ctx.globalAlpha = 0.85;
-    ctx.lineWidth = width * 0.3;
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-
-  const step = Math.max(3, Math.floor(segs.length / 50));
-  for (let i = 0; i < segs.length; i += step) {
-    const g = segs[i];
-    const phase = g.s * twist;
-    const amp = g.w * 0.3;
-    ctx.globalAlpha = 0.3;
-    ctx.fillStyle = (i * 5) % 2 === 0 ? JUTE.pale : JUTE.deepest;
-    ctx.beginPath();
-    ctx.arc(
-      g.x + g.nx * Math.cos(phase) * amp,
-      g.y + g.ny * Math.cos(phase) * amp,
-      width * 0.06,
-      0,
-      Math.PI * 2,
-    );
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-  ctx.restore();
+  drawCordRuns(ctx, [points], width, quality, slack);
 }
 
 export function drawJuteRope(
@@ -313,10 +214,18 @@ export function drawJuteRope(
   runs: HelixPoint[][],
   width: number,
   slack = 0,
+  quality: 0 | 1 | 2 = 2,
 ) {
-  for (const run of runs) {
-    if (run.length >= 2) drawJuteRun(ctx, run, width, slack);
-  }
+  drawCordRuns(ctx, runs, width, quality, slack);
+}
+
+export function drawBehindRope(
+  ctx: CanvasRenderingContext2D,
+  runs: HelixPoint[][],
+  width: number,
+  quality: 0 | 1 | 2 = 1,
+) {
+  drawBehindCordRuns(ctx, runs, width, quality);
 }
 
 export function drawLooseTip(
@@ -326,26 +235,53 @@ export function drawLooseTip(
   tangent?: Vec2,
 ) {
   ctx.save();
-  drawSoftEllipse(ctx, tip.x + 1.5, tip.y + 2.5, width, width * 0.5, "rgba(0,0,0,0.45)");
   const tx = tangent?.x ?? 0;
   const ty = tangent?.y ?? 1;
   const nx = -ty;
   const ny = tx;
-  for (let i = -3; i <= 3; i++) {
+
+  ctx.beginPath();
+  ctx.arc(tip.x + 0.8, tip.y + 1.2, width * 0.5, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.28)";
+  ctx.fill();
+
+  const fibers = [
+    "#c4b08a",
+    "#d4c49a",
+    "#e2d4b4",
+    "#efe4ce",
+    "#c9b892",
+    "#f5eedc",
+  ];
+  for (let i = -5; i <= 5; i++) {
+    const spread = i * 0.65;
+    const len = width * (1.1 + (Math.abs(i) % 3) * 0.25);
     ctx.beginPath();
-    ctx.moveTo(tip.x + nx * i * 1.1, tip.y + ny * i * 1.1);
+    ctx.moveTo(tip.x + nx * spread, tip.y + ny * spread);
     ctx.lineTo(
-      tip.x + tx * width * 1.15 + nx * i * 2.5,
-      tip.y + ty * width * 1.15 + ny * i * 2.5,
+      tip.x + tx * len + nx * spread * 1.8,
+      tip.y + ty * len + ny * spread * 1.8,
     );
-    ctx.strokeStyle = i % 2 === 0 ? JUTE.fiber : JUTE.dark;
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = fibers[Math.abs(i) % fibers.length];
+    ctx.lineWidth = 0.85 + (Math.abs(i) % 2) * 0.25;
     ctx.lineCap = "round";
     ctx.stroke();
   }
+
   ctx.beginPath();
-  ctx.arc(tip.x, tip.y, width * 0.45, 0, Math.PI * 2);
-  ctx.fillStyle = JUTE.mid;
+  ctx.arc(tip.x, tip.y, width * 0.38, 0, Math.PI * 2);
+  const tipGrad = ctx.createRadialGradient(
+    tip.x - 1,
+    tip.y - 1,
+    0,
+    tip.x,
+    tip.y,
+    width * 0.38,
+  );
+  tipGrad.addColorStop(0, "#f5eedc");
+  tipGrad.addColorStop(0.5, "#e2d4b4");
+  tipGrad.addColorStop(1, "#c4b08a");
+  ctx.fillStyle = tipGrad;
   ctx.fill();
   ctx.restore();
 }

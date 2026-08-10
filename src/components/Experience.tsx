@@ -43,7 +43,6 @@ export function Experience({ stitchProgress = 0 }: { stitchProgress?: number }) 
             data-stitch-content
             data-stitch-id="experience-timeline"
             data-side="right"
-            style={{ ["--settle" as string]: String(local) }}
           >
             <ol className="timeline">
               {experience.map((entry, i) => (

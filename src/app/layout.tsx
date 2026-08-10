@@ -44,6 +44,14 @@ export default function RootLayout({
       data-theme="light"
       className={`${display.variable} ${body.variable} ${signature.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/textures/linen-hero.jpg"
+          type="image/jpeg"
+        />
+      </head>
       <body className="min-h-full">{children}</body>
     </html>
   );
