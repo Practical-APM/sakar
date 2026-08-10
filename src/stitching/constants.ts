@@ -48,8 +48,8 @@ export const HOLES = {
 export const THREAD = {
   springK: 90,
   dampingC: 18,
-  strokeWidth: 4.2,
-  tipRadius: 2.8,
+  strokeWidth: 6.5,
+  tipRadius: 3.4,
   initialProgress: 0.08,
 } as const;
 

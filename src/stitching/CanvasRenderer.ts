@@ -92,7 +92,7 @@ export function drawClothSplit(
     ctx.lineTo(samples[i].xr, samples[i].y);
   }
   ctx.closePath();
-  ctx.fillStyle = "#030201";
+  ctx.fillStyle = "#1a1510";
   ctx.fill();
 
   // Inner void vignette (reads as depth into darkness)
@@ -246,12 +246,12 @@ export function drawLooseTip(
   ctx.fill();
 
   const fibers = [
-    "#c4b08a",
-    "#d4c49a",
-    "#e2d4b4",
-    "#efe4ce",
-    "#c9b892",
-    "#f5eedc",
+    "#9a7d4e",
+    "#b8955c",
+    "#c9a878",
+    "#dcc49a",
+    "#a88855",
+    "#e8d4b0",
   ];
   for (let i = -5; i <= 5; i++) {
     const spread = i * 0.65;
@@ -278,9 +278,9 @@ export function drawLooseTip(
     tip.y,
     width * 0.38,
   );
-  tipGrad.addColorStop(0, "#f5eedc");
-  tipGrad.addColorStop(0.5, "#e2d4b4");
-  tipGrad.addColorStop(1, "#c4b08a");
+  tipGrad.addColorStop(0, "#e8d4b0");
+  tipGrad.addColorStop(0.5, "#c9a878");
+  tipGrad.addColorStop(1, "#9a7d4e");
   ctx.fillStyle = tipGrad;
   ctx.fill();
   ctx.restore();

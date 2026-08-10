@@ -51,7 +51,13 @@ export function ThinkingSection({
                   data-stitch-id={`principle-${p.id}`}
                   data-side="right"
                 >
-                  <PrincipleIcon name={p.icon} className="text-accent" size={28} />
+                  <span className="thinking__icon" aria-hidden>
+                    <PrincipleIcon
+                      name={p.icon}
+                      className="text-accent"
+                      size={28}
+                    />
+                  </span>
                   <p>{p.text}</p>
                 </FabricPatch>
               </li>

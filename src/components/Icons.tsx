@@ -6,7 +6,7 @@ type IconProps = {
 const stroke = {
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.5,
+  strokeWidth: 2,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
 };
@@ -194,6 +194,8 @@ export function ProjectIcon({
       return <IconBeacon className={className} size={size} />;
     case "ledger":
       return <IconLedger className={className} size={size} />;
+    case "syftn":
+      return <IconTarget className={className} size={size} />;
     default:
       return <IconStarBurst className={className} size={size} />;
   }

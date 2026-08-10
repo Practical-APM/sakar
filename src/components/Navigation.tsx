@@ -6,7 +6,7 @@ import { IconMenu } from "./Icons";
 const links = [
   { href: "#work", label: "Work" },
   { href: "#about", label: "About" },
-  { href: "#journal", label: "Journal" },
+  { href: "#life", label: "Life" },
   { href: "#contact", label: "Contact" },
 ];
 

@@ -1,29 +1,9 @@
 import type { Principle } from "@/types";
+import { strengths } from "./experience";
 
-export const principles: Principle[] = [
-  {
-    id: "system",
-    text: "Understand the system first.",
-    icon: "lightbulb",
-  },
-  {
-    id: "outcomes",
-    text: "Focus on outcomes, not outputs.",
-    icon: "target",
-  },
-  {
-    id: "people",
-    text: "Design for people, not processes.",
-    icon: "people",
-  },
-  {
-    id: "measure",
-    text: "Measure what matters.",
-    icon: "pulse",
-  },
-  {
-    id: "iterate",
-    text: "Iterate with clarity and intent.",
-    icon: "compass",
-  },
-];
+/** Resume strengths, shown in the loadout section. */
+export const principles: Principle[] = strengths.map((text, i) => ({
+  id: `strength-${i}`,
+  text,
+  icon: (["lightbulb", "target", "people", "pulse"] as const)[i] ?? "compass",
+}));

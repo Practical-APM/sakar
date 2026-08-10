@@ -6,8 +6,16 @@ export interface Project {
   year: string;
   tags: string[];
   metrics?: string[];
+  highlights?: string[];
+  /** Public product URL when available */
+  url?: string;
   slug: string;
-  icon: "knuud" | "hypersync" | "echo" | "beacon" | "ledger" | "styfin";
+  icon: "knuud" | "echo" | "beacon" | "ledger" | "syftn";
+}
+
+export interface ExperienceStat {
+  value: string;
+  label: string;
 }
 
 export interface ExperienceEntry {
@@ -15,6 +23,14 @@ export interface ExperienceEntry {
   title: string;
   period: string;
   year: string;
+  location?: string;
+  highlights?: string[];
+  /** One-line product framing */
+  focus?: string;
+  /** Big-number callouts pulled from resume metrics */
+  stats?: ExperienceStat[];
+  accent?: string;
+  monogram?: string;
 }
 
 export interface Principle {

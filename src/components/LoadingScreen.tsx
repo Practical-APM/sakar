@@ -65,9 +65,9 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
         ctx.beginPath();
         ctx.ellipse(side * 38, 0, 10, 34, 0, 0, Math.PI * 2);
         const cap = ctx.createLinearGradient(side * 38 - 10, -34, side * 38 + 10, 34);
-        cap.addColorStop(0, "#efe4ce");
-        cap.addColorStop(0.5, "#d4bc94");
-        cap.addColorStop(1, "#a89068");
+        cap.addColorStop(0, "#e8d4b0");
+        cap.addColorStop(0.5, "#c9a878");
+        cap.addColorStop(1, "#9a7d4e");
         ctx.fillStyle = cap;
         ctx.fill();
       }
@@ -79,7 +79,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
         const yy = -28 + i * 4.2;
         ctx.beginPath();
         ctx.ellipse(0, yy, 36, 5, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = i % 2 === 0 ? "#d4bc94" : "#b09a72";
+        ctx.strokeStyle = i % 2 === 0 ? "#dcc49a" : "#b8955c";
         ctx.lineWidth = 3.2;
         ctx.stroke();
       }
@@ -117,7 +117,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
         cx + sway * 0.3,
         cy + fall,
       );
-      ctx.strokeStyle = "#b09a72";
+      ctx.strokeStyle = "#b8955c";
       ctx.lineWidth = 7;
       ctx.stroke();
 
@@ -130,7 +130,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
           cx + sway * 0.3 + (s - 1) * 2,
           cy + fall,
         );
-        ctx.strokeStyle = s === 1 ? "#efe4ce" : "#a89068";
+        ctx.strokeStyle = s === 1 ? "#e8d4b0" : "#9a7d4e";
         ctx.lineWidth = 2.5;
         ctx.globalAlpha = 0.8;
         ctx.stroke();
@@ -139,7 +139,7 @@ export function SpoolLoading({ onComplete }: SpoolLoadingProps) {
 
       ctx.beginPath();
       ctx.arc(cx + sway * 0.3, cy + fall, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = "#c4a878";
+      ctx.fillStyle = "#c9a878";
       ctx.fill();
 
       ctx.fillStyle = "#20231F";

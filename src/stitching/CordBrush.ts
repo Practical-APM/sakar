@@ -1,29 +1,30 @@
 import type { HelixPoint } from "./HelixPath";
 
 /**
- * Natural raw jute — light sandy straw, matte (not dark kraft or gold metal).
+ * Natural raw jute — warm sandy straw that reads on both cream linen
+ * and the dark seam void (not black ink, not metallic gold).
  */
 
 type Pt = { x: number; y: number };
 
 const JUTE = {
-  dark: "#c4b08a",
-  mid: "#d4c49a",
-  body: "#e2d4b4",
-  light: "#efe4ce",
-  pale: "#f5eedc",
-  tip: "#d0be98",
+  dark: "#9a7d4e",
+  mid: "#b8955c",
+  body: "#c9a878",
+  light: "#dcc49a",
+  pale: "#e8d4b0",
+  tip: "#a88855",
 } as const;
 
 const PLY = [
-  "#c4b08a",
-  "#d4c49a",
-  "#e2d4b4",
-  "#efe4ce",
-  "#c9b892",
-  "#f5eedc",
-  "#b8a67c",
-  "#eadfc8",
+  "#9a7d4e",
+  "#b8955c",
+  "#c9a878",
+  "#dcc49a",
+  "#a88855",
+  "#e8d4b0",
+  "#8b7048",
+  "#d4b888",
 ];
 
 function tubeSides(
@@ -76,24 +77,24 @@ export function drawCordRun(
   slack = 0,
 ) {
   if (points.length < 2) return;
-  const half = Math.max(1.6, width * 0.44);
+  const half = Math.max(2.4, width * 0.5);
   ctx.save();
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 
   const { left, right, ns } = tubeSides(points, half);
 
-  // Soft contact shadow — keep light so cord stays sandy, not black
+  // Soft contact shadow — warm, not black
   ctx.beginPath();
-  ctx.moveTo(left[0].x + 0.8, left[0].y + 1.2);
+  ctx.moveTo(left[0].x + 0.9, left[0].y + 1.3);
   for (let i = 1; i < left.length; i++) {
-    ctx.lineTo(left[i].x + 0.8, left[i].y + 1.2);
+    ctx.lineTo(left[i].x + 0.9, left[i].y + 1.3);
   }
   for (let i = right.length - 1; i >= 0; i--) {
-    ctx.lineTo(right[i].x + 0.8, right[i].y + 1.2);
+    ctx.lineTo(right[i].x + 0.9, right[i].y + 1.3);
   }
   ctx.closePath();
-  ctx.fillStyle = "rgba(80, 60, 30, 0.14)";
+  ctx.fillStyle = "rgba(90, 65, 30, 0.18)";
   ctx.fill();
 
   const mid = (points.length / 2) | 0;
@@ -104,31 +105,36 @@ export function drawCordRun(
     points[mid].y,
   );
   body.addColorStop(0, JUTE.pale);
-  body.addColorStop(0.35, JUTE.light);
-  body.addColorStop(0.7, JUTE.body);
+  body.addColorStop(0.3, JUTE.light);
+  body.addColorStop(0.65, JUTE.body);
   body.addColorStop(1, JUTE.mid);
   fillTube(ctx, left, right, body);
 
+  // Solid body pass so pale gradients never wash out to invisible
+  ctx.globalAlpha = 0.55;
+  fillTube(ctx, left, right, JUTE.body);
+  ctx.globalAlpha = 1;
+
   ctx.beginPath();
-  ctx.arc(points[0].x, points[0].y, half * 0.85, 0, Math.PI * 2);
+  ctx.arc(points[0].x, points[0].y, half * 0.9, 0, Math.PI * 2);
   ctx.arc(
     points[points.length - 1].x,
     points[points.length - 1].y,
-    half * 0.85,
+    half * 0.9,
     0,
     Math.PI * 2,
   );
   ctx.fillStyle = JUTE.body;
   ctx.fill();
 
-  // Matte ridge — muted, no metallic sheen
+  // Matte ridge
   ctx.beginPath();
   ctx.moveTo(points[0].x + half * 0.08, points[0].y + half * 0.1);
   for (let i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x + half * 0.08, points[i].y + half * 0.1);
   }
-  ctx.strokeStyle = "rgba(140, 120, 80, 0.28)";
-  ctx.lineWidth = width * 0.28;
+  ctx.strokeStyle = "rgba(110, 85, 45, 0.35)";
+  ctx.lineWidth = width * 0.32;
   ctx.stroke();
 
   ctx.beginPath();
@@ -136,11 +142,11 @@ export function drawCordRun(
   for (let i = 1; i < points.length; i++) {
     ctx.lineTo(points[i].x - half * 0.1, points[i].y - half * 0.08);
   }
-  ctx.strokeStyle = "rgba(255, 248, 230, 0.35)";
-  ctx.lineWidth = width * 0.12;
+  ctx.strokeStyle = "rgba(255, 245, 220, 0.4)";
+  ctx.lineWidth = width * 0.14;
   ctx.stroke();
 
-  const strands = quality === 0 ? 2 : quality === 1 ? 4 : 5;
+  const strands = quality === 0 ? 3 : quality === 1 ? 5 : 6;
   const step = quality === 0 ? 2 : 1;
   const twist = 0.48 + slack * 0.12;
   for (let strand = 0; strand < strands; strand++) {
@@ -167,8 +173,8 @@ export function drawCordRun(
       }
     }
     ctx.strokeStyle = PLY[(strand + (points[0].s | 0)) % PLY.length];
-    ctx.globalAlpha = 0.4 + (strand % 3) * 0.06;
-    ctx.lineWidth = Math.max(0.55, width * (0.09 + (strand % 3) * 0.025));
+    ctx.globalAlpha = 0.45 + (strand % 3) * 0.08;
+    ctx.lineWidth = Math.max(0.7, width * (0.1 + (strand % 3) * 0.03));
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
@@ -196,8 +202,8 @@ export function drawCordRun(
         } else ctx.lineTo(x, y);
       }
       ctx.strokeStyle = PLY[(strand + 2) % PLY.length];
-      ctx.globalAlpha = 0.22;
-      ctx.lineWidth = width * 0.07;
+      ctx.globalAlpha = 0.28;
+      ctx.lineWidth = width * 0.08;
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
@@ -210,8 +216,8 @@ export function drawCordRun(
     ctx.lineTo(right[i].x, right[i].y);
   }
   ctx.closePath();
-  ctx.strokeStyle = "rgba(150, 130, 90, 0.18)";
-  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = "rgba(120, 95, 55, 0.28)";
+  ctx.lineWidth = 0.7;
   ctx.stroke();
 
   ctx.restore();
@@ -236,9 +242,9 @@ export function drawBehindCordRuns(
   quality: 0 | 1 | 2 = 1,
 ) {
   if (!runs.length) return;
-  const w = Math.max(1.8, width * 0.65);
+  const w = Math.max(2.2, width * 0.7);
   ctx.save();
-  ctx.globalAlpha = 0.55;
+  ctx.globalAlpha = 0.62;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 
@@ -250,8 +256,8 @@ export function drawBehindCordRuns(
     for (let i = 1; i < points.length; i++) {
       ctx.lineTo(points[i].x, points[i].y);
     }
-    ctx.strokeStyle = "rgba(60, 45, 25, 0.28)";
-    ctx.lineWidth = w + 1.4;
+    ctx.strokeStyle = "rgba(80, 55, 25, 0.22)";
+    ctx.lineWidth = w + 1.6;
     ctx.stroke();
 
     ctx.beginPath();
@@ -270,10 +276,10 @@ export function drawBehindCordRuns(
         ctx.lineTo(points[i].x, points[i].y);
       }
       ctx.strokeStyle = JUTE.light;
-      ctx.globalAlpha = 0.3;
-      ctx.lineWidth = w * 0.35;
+      ctx.globalAlpha = 0.4;
+      ctx.lineWidth = w * 0.4;
       ctx.stroke();
-      ctx.globalAlpha = 0.55;
+      ctx.globalAlpha = 0.62;
     }
   }
 

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
+  <!-- Soft ground shadow -->
+  <ellipse cx="80" cy="112" rx="52" ry="6" fill="#000" opacity="0.4"/>
+  <!-- Open book: left cover -->
+  <path d="M14 30 L78 18 L78 100 L20 108 Z" fill="#3d2110" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Right cover -->
+  <path d="M82 18 L146 30 L140 108 L82 100 Z" fill="#4a2812" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Left page -->
+  <path d="M24 34 L76 24 L76 96 L26 102 Z" fill="#fff6e0" stroke="#111" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Right page -->
+  <path d="M84 24 L136 34 L134 102 L84 96 Z" fill="#fff1d4" stroke="#111" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Spine gutter -->
+  <path d="M76 24 L84 24 L84 96 L76 96 Z" fill="#111" opacity="0.28"/>
+  <!-- Text lines left -->
+  <g stroke="#c9b07a" stroke-width="2.2" stroke-linecap="square">
+    <path d="M32 46 L68 42"/>
+    <path d="M32 56 L66 52"/>
+    <path d="M32 66 L68 62"/>
+    <path d="M32 76 L62 73"/>
+  </g>
+  <!-- Text lines right -->
+  <g stroke="#c9b07a" stroke-width="2.2" stroke-linecap="square">
+    <path d="M92 42 L128 46"/>
+    <path d="M94 52 L128 56"/>
+    <path d="M92 62 L126 66"/>
+    <path d="M96 72 L122 76"/>
+  </g>
+  <!-- Gold title plate -->
+  <rect x="38" y="36" width="26" height="7" fill="#f7d51d" stroke="#111" stroke-width="1.5"/>
+  <!-- Bookmark -->
+  <path d="M120 20 V46 L114 40 L108 46 V22 Z" fill="#e76e55" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+</svg>

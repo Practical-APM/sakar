@@ -27,10 +27,11 @@ export function Experience({ stitchProgress = 0 }: { stitchProgress?: number }) 
             Experience
           </h2>
           <p className="section-lede">
-            A stitched path through roles that shaped how I build.
+            From cofounding Covalynce to owning integration work at Tartan — a path
+            through AI products, implementation, and teams that ship.
           </p>
           <a href="#about" className="text-cta">
-            View journey
+            More about me
             <IconArrowCircle className="text-accent" size={26} />
           </a>
         </div>
@@ -47,7 +48,7 @@ export function Experience({ stitchProgress = 0 }: { stitchProgress?: number }) 
             <ol className="timeline">
               {experience.map((entry, i) => (
                 <li
-                  key={`${entry.title}-${entry.year}`}
+                  key={`${entry.company}-${entry.year}`}
                   className="timeline__item"
                 >
                   <div className="timeline__marker">
@@ -59,7 +60,13 @@ export function Experience({ stitchProgress = 0 }: { stitchProgress?: number }) 
                   <div className="timeline__content">
                     <p className="timeline__company">{entry.company}</p>
                     <p className="timeline__title">{entry.title}</p>
-                    <p className="timeline__period">{entry.period}</p>
+                    <p className="timeline__period">
+                      {entry.period}
+                      {entry.location ? ` · ${entry.location}` : ""}
+                    </p>
+                    {entry.highlights?.[0] && (
+                      <p className="timeline__highlight">{entry.highlights[0]}</p>
+                    )}
                   </div>
                 </li>
               ))}

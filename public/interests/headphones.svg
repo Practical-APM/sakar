@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
+  <ellipse cx="80" cy="112" rx="44" ry="6" fill="#000" opacity="0.35"/>
+  <!-- Headband outer -->
+  <path d="M36 58c0-26 18-42 44-42s44 16 44 42" stroke="#111" stroke-width="15" stroke-linecap="round"/>
+  <!-- Headband -->
+  <path d="M36 58c0-26 18-42 44-42s44 16 44 42" stroke="#d5dde8" stroke-width="11" stroke-linecap="round"/>
+  <!-- Band highlight -->
+  <path d="M44 44c8-16 20-26 36-26s28 10 36 26" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+  <!-- Left cup -->
+  <rect x="14" y="50" width="30" height="42" rx="5" fill="#2ea8ef" stroke="#111" stroke-width="3"/>
+  <rect x="20" y="58" width="18" height="24" rx="2" fill="#0a2f45" stroke="#111" stroke-width="2"/>
+  <rect x="18" y="54" width="7" height="14" rx="1.5" fill="#7fd0ff" opacity="0.55"/>
+  <!-- Right cup -->
+  <rect x="116" y="50" width="30" height="42" rx="5" fill="#2ea8ef" stroke="#111" stroke-width="3"/>
+  <rect x="122" y="58" width="18" height="24" rx="2" fill="#0a2f45" stroke="#111" stroke-width="2"/>
+  <rect x="120" y="54" width="7" height="14" rx="1.5" fill="#7fd0ff" opacity="0.55"/>
+  <!-- Center note -->
+  <g transform="translate(72 10)">
+    <path d="M6 2v30c-3.5 1-6 3.5-6 7 0 4 3 7 7 7s7-3 7-7V14l16-4v22c-3.5 1-6 3.5-6 7 0 4 3 7 7 7s7-3 7-7V2z"
+          fill="#f7d51d" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -17,7 +17,7 @@ function smoothstep(start: number, end: number, v: number) {
 
 /**
  * Cards sit crooked until the lace reaches them, then pull flush.
- * `laceY` should be the lowest Y the thread has actually reached.
+ * Slight per-index stagger so a stack settles like a cascade of patches.
  */
 export function contentSettleOffset(
   _progress: number,
@@ -26,6 +26,7 @@ export function contentSettleOffset(
   elementY?: number,
   laceY?: number,
 ) {
+  const stagger = (index % 6) * 28;
   let settled = 0;
   if (
     elementY != null &&
@@ -33,16 +34,18 @@ export function contentSettleOffset(
     Number.isFinite(elementY) &&
     Number.isFinite(laceY)
   ) {
-    // Begin pull-in ~380px before lace arrives; lock flush ~60px after
-    settled = smoothstep(elementY - 380, elementY + 60, laceY);
+    // Begin pull-in before lace arrives; lock flush shortly after
+    settled = smoothstep(elementY - 360 + stagger, elementY + 50 + stagger * 0.35, laceY);
   } else {
     settled = Math.min(1, Math.max(0, _progress));
   }
 
-  const unsettled = 1 - settled;
+  // Soft overshoot into place (ease past 1 then settle) via cubic bias
+  const s = settled * settled * (3 - 2 * settled);
+  const unsettled = 1 - s;
   const sign = side === "left" ? -1 : 1;
-  const rot = unsettled * (7.5 + (index % 5) * 1.6) * sign;
-  const x = unsettled * (48 + (index % 4) * 12) * sign;
-  const y = unsettled * (16 + (index % 3) * 6);
-  return { x, y, rotate: rot, settled };
+  const rot = unsettled * (5.5 + (index % 5) * 1.35) * sign;
+  const x = unsettled * (36 + (index % 4) * 10) * sign;
+  const y = unsettled * (12 + (index % 3) * 5);
+  return { x, y, rotate: rot, settled: s };
 }
