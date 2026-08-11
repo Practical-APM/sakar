@@ -12,8 +12,17 @@ import { ExperienceTimeline } from "./ExperienceTimeline";
 import { GithubSection } from "./GithubSection";
 import { InterestCards } from "./InterestCards";
 import { PixelStars } from "./PixelStars";
+import { LeadIntakeModal } from "./LeadIntakeModal";
+import { useRetroNostalgia } from "@/hooks/useRetroNostalgia";
+import {
+  InteractiveMascot,
+  PaletteToggle,
+  RetroEqBars,
+  RetroScoreDisplay,
+} from "./RetroNostalgia";
 import { PowerOn } from "./PowerOn";
 import { Reveal } from "./Reveal";
+import { ProductPhilosophy } from "./ProductPhilosophy";
 import {
   NeonText,
   RetroMarquee,
@@ -25,6 +34,7 @@ const COLORS = ["#e76e55", "#209cee", "#92cc41", "#f7d51d", "#f06292"];
 
 const NAV = [
   { href: "#projects", id: "projects", label: "Projects" },
+  { href: "#philosophy", id: "philosophy", label: "Philosophy" },
   { href: "#experience", id: "experience", label: "Experience" },
   { href: "#skills", id: "skills", label: "Skills" },
   { href: "#about", id: "about", label: "About" },
@@ -38,7 +48,10 @@ export function PortfolioShell() {
   const [volume, setVolume] = useState(85);
   const [bgmReady, setBgmReady] = useState(false);
   const [activeNav, setActiveNav] = useState("projects");
+  const [modalOpen, setModalOpen] = useState(false);
   const blips = useRef<ReturnType<typeof createBlipEngine> | null>(null);
+
+  const nostalgia = useRetroNostalgia();
 
   const audio = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -144,17 +157,39 @@ export function PortfolioShell() {
       </svg>
 
       {ready && (
-        <main
-          className={`pixel-shell crt__screen${booting ? " is-under-snow" : " is-live"}`}
-        >
+        <>
+          <main
+            className={`pixel-shell crt__screen${booting ? " is-under-snow" : " is-live"}`}
+          >
           <header className="topbar">
             <div className="topbar__who">
-              <h1>{profile.name}</h1>
-              <p>
-                {profile.title} · {profile.location}
-              </p>
+              <div className="topbar__who-title">
+                <InteractiveMascot onBlip={() => blips.current?.coin()} />
+                <div>
+                  <h1>{profile.name}</h1>
+                  <p>
+                    {profile.title} · {profile.location}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="sound-dock">
+              <RetroScoreDisplay
+                score={nostalgia.score}
+                cheatUnlocked={nostalgia.cheatUnlocked}
+                onUnlock={() => {
+                  nostalgia.unlockCheatManual();
+                  blips.current?.coin();
+                }}
+              />
+              <PaletteToggle
+                paletteName={nostalgia.paletteName}
+                onCycle={() => {
+                  nostalgia.cyclePalette();
+                  blips.current?.select();
+                }}
+              />
+              <RetroEqBars playing={!muted && bgmReady} />
               <button
                 type="button"
                 className={`nes-btn sound-toggle${muted ? "" : " is-success"}`}
@@ -216,22 +251,29 @@ export function PortfolioShell() {
           </Reveal>
 
           <Reveal variant="punch">
+            <section id="philosophy" className="pixel-zone">
+              <ZoneHeader num="02" title="PRODUCT PHILOSOPHY" />
+              <ProductPhilosophy onSelect={ping} />
+            </section>
+          </Reveal>
+
+          <Reveal variant="punch">
             <section id="experience" className="pixel-zone">
-              <ZoneHeader num="02" title="EXPERIENCE" />
+              <ZoneHeader num="03" title="EXPERIENCE" />
               <ExperienceTimeline />
             </section>
           </Reveal>
 
           <Reveal variant="punch">
             <section id="skills" className="pixel-zone">
-              <ZoneHeader num="03" title="STRENGTHS & SKILLS" />
-              <SkillsLoadout />
+              <ZoneHeader num="04" title="STRENGTHS & SKILLS" />
+              <SkillsLoadout onSelect={ping} />
             </section>
           </Reveal>
 
           <Reveal variant="punch">
             <section id="about" className="pixel-zone">
-              <ZoneHeader num="04" title="ABOUT" />
+              <ZoneHeader num="05" title="ABOUT" />
               <AboutPanels />
             </section>
           </Reveal>
@@ -240,7 +282,7 @@ export function PortfolioShell() {
 
           <Reveal variant="punch">
             <section id="contact" className="pixel-zone">
-              <ZoneHeader num="05" title="CONTACT" />
+              <ZoneHeader num="06" title="CONTACT" />
               <div className="nes-container is-rounded is-dark continue-panel">
                 <NeonText className="continue-panel__neon" as="p" color="var(--lime)">
                   INSERT COIN TO CONTINUE
@@ -256,6 +298,16 @@ export function PortfolioShell() {
                   ]}
                 />
                 <div className="contact-row">
+                  <button
+                    type="button"
+                    className="nes-btn is-warning contact-hire-btn"
+                    onClick={() => {
+                      blips.current?.coin();
+                      setModalOpen(true);
+                    }}
+                  >
+                    👾 INSERT COIN TO HIRE
+                  </button>
                   {socialLinks.map((link) => (
                     <a
                       key={link.label}
@@ -289,10 +341,30 @@ export function PortfolioShell() {
             <span>
               © {new Date().getFullYear()} {profile.name}
             </span>
-            <span>{profile.email}</span>
+            <div className="pixel-footer__actions">
+              <span>{profile.email}</span>
+              <button
+                type="button"
+                className="nes-btn is-primary pixel-footer__hire-btn"
+                onClick={() => {
+                  blips.current?.coin();
+                  setModalOpen(true);
+                }}
+              >
+                👾 HIRE ME
+              </button>
+            </div>
           </footer>
         </main>
+
+        <LeadIntakeModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onBlip={() => blips.current?.select()}
+        />
+        </>
       )}
     </div>
   );
 }
+
