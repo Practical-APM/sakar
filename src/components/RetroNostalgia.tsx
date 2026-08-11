@@ -96,12 +96,12 @@ export function InteractiveMascot({ onBlip }: { onBlip?: () => void }) {
 
   return (
     <div className="interactive-mascot" onClick={handleClick} title="Click for 8-bit quote!">
-      <div className={`mascot-bubble${jumping ? " is-pop" : ""}`}>
-        <span>{QUOTES[quoteIdx]}</span>
-      </div>
       <div className={`mascot-sprite${jumping ? " is-jumping" : ""}`}>
         <div className="mascot-sprite__head" />
         <div className="mascot-sprite__body" />
+      </div>
+      <div className={`mascot-bubble${jumping ? " is-pop" : ""}`}>
+        <span>{QUOTES[quoteIdx]}</span>
       </div>
     </div>
   );
