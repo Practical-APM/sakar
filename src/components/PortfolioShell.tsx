@@ -12,8 +12,12 @@ import { ExperienceTimeline } from "./ExperienceTimeline";
 import { GithubSection } from "./GithubSection";
 import { InterestCards } from "./InterestCards";
 import { PixelStars } from "./PixelStars";
+import { PixelDustCursor } from "./PixelDustCursor";
+import { ScrollProgressBar } from "./ScrollProgressBar";
 import { LeadIntakeModal } from "./LeadIntakeModal";
 import { useRetroNostalgia } from "@/hooks/useRetroNostalgia";
+import { useRetroAchievements } from "@/hooks/useRetroAchievements";
+import { useScrollSpy } from "@/hooks/useScrollSpy";
 import {
   InteractiveMascot,
   PaletteToggle,
@@ -41,17 +45,27 @@ const NAV = [
   { href: "#contact", id: "contact", label: "Contact" },
 ];
 
+const SECTION_IDS = NAV.map((n) => n.id);
+
 export function PortfolioShell() {
   const [booting, setBooting] = useState(true);
   const [ready, setReady] = useState(false);
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(85);
   const [bgmReady, setBgmReady] = useState(false);
+  const activeSectionId = useScrollSpy(SECTION_IDS, 140);
   const [activeNav, setActiveNav] = useState("projects");
   const [modalOpen, setModalOpen] = useState(false);
   const blips = useRef<ReturnType<typeof createBlipEngine> | null>(null);
 
+  useEffect(() => {
+    if (activeSectionId) {
+      setActiveNav(activeSectionId);
+    }
+  }, [activeSectionId]);
+
   const nostalgia = useRetroNostalgia();
+  const achievements = useRetroAchievements();
 
   const audio = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -131,6 +145,8 @@ export function PortfolioShell() {
         <div className={`crt__led${booting ? " is-warming" : ""}`} />
       </div>
       <PixelStars />
+      <PixelDustCursor />
+      <ScrollProgressBar />
       <CrtFx active={!booting} />
 
       {booting && <PowerOn onNoise={onNoise} onDone={onBootDone} />}
@@ -193,7 +209,10 @@ export function PortfolioShell() {
               <button
                 type="button"
                 className={`nes-btn sound-toggle${muted ? "" : " is-success"}`}
-                onClick={toggleMute}
+                onClick={() => {
+                  toggleMute();
+                  achievements.unlock("audiophile");
+                }}
                 aria-pressed={!muted}
               >
                 {muted ? "SOUND OFF" : bgmReady ? "SOUND ON" : "LOADING…"}
@@ -278,7 +297,7 @@ export function PortfolioShell() {
             </section>
           </Reveal>
 
-          <InterestCards />
+          <InterestCards onSelect={ping} />
 
           <Reveal variant="punch">
             <section id="contact" className="pixel-zone">
@@ -362,6 +381,19 @@ export function PortfolioShell() {
           onClose={() => setModalOpen(false)}
           onBlip={() => blips.current?.select()}
         />
+        {achievements.recentToast && (
+          <div className="achievement-toast" role="alert" aria-live="assertive">
+            <span className="achievement-toast__icon">{achievements.recentToast.icon}</span>
+            <div className="achievement-toast__body">
+              <strong>ACHIEVEMENT UNLOCKED</strong>
+              <span>{achievements.recentToast.title}</span>
+              <em>{achievements.recentToast.desc}</em>
+            </div>
+            <div className="achievement-toast__progress">
+              {achievements.unlockedCount}/{achievements.totalCount}
+            </div>
+          </div>
+        )}
         </>
       )}
     </div>

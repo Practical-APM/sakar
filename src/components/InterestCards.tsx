@@ -55,8 +55,8 @@ function InterestArt({ id }: { id: InterestId }) {
   );
 }
 
-/** Three interest cards with scroll-staggered entrances + idle motion. */
-export function InterestCards() {
+/** Three interest cards with scroll-staggered entrances + hover particle animations. */
+export function InterestCards({ onSelect }: { onSelect?: () => void }) {
   const railRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,6 +96,7 @@ export function InterestCards() {
                 ["--interest-delay"]: `${i * 140}ms`,
               } as CSSProperties
             }
+            onClick={() => onSelect?.()}
           >
             <div className="interest-card__stage">
               <InterestArt id={item.id} />

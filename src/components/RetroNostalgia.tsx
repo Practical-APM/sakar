@@ -86,23 +86,39 @@ const QUOTES = [
 export function InteractiveMascot({ onBlip }: { onBlip?: () => void }) {
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [jumping, setJumping] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+
+  useEffect(() => {
+    if (!showBubble) return;
+    const timer = window.setTimeout(() => setShowBubble(false), 2800);
+    return () => clearTimeout(timer);
+  }, [showBubble, quoteIdx]);
 
   const handleClick = () => {
     onBlip?.();
     setJumping(true);
     setQuoteIdx((prev) => (prev + 1) % QUOTES.length);
-    window.setTimeout(() => setJumping(false), 450);
+    setShowBubble(true);
+    window.setTimeout(() => setJumping(false), 400);
   };
 
   return (
-    <div className="interactive-mascot" onClick={handleClick} title="Click for 8-bit quote!">
+    <div
+      className="interactive-mascot"
+      onClick={handleClick}
+      title="Click 8-bit sprite for retro quote!"
+    >
       <div className={`mascot-sprite${jumping ? " is-jumping" : ""}`}>
         <div className="mascot-sprite__head" />
         <div className="mascot-sprite__body" />
       </div>
-      <div className={`mascot-bubble${jumping ? " is-pop" : ""}`}>
-        <span>{QUOTES[quoteIdx]}</span>
-      </div>
+
+      {showBubble && (
+        <div className="mascot-bubble" role="tooltip">
+          <span>{QUOTES[quoteIdx]}</span>
+          <i className="mascot-bubble__arrow" aria-hidden />
+        </div>
+      )}
     </div>
   );
 }
