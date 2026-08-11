@@ -2,14 +2,13 @@
 
 /**
  * Web Audio 8-bit SFX + hard-hitting looping BGM.
- * BGM: "8-bit - Jester Battle" by HydroGene (CC0 / public domain)
- * https://opengameart.org/content/8-bit-jester-battle
+ * BGM: "YcoqPzRt1OQ" from YouTube (https://youtu.be/YcoqPzRt1OQ)
  *
  * BGM is decoded into an AudioBuffer and played through the same
  * AudioContext as SFX (HTMLAudioElement was silent for some setups).
  */
 
-const BGM_SRC = "/audio/bgm.mp3";
+const BGM_SRC = "/audio/bgm_new.mp4";
 
 export function createBlipEngine() {
   let ctx: AudioContext | null = null;

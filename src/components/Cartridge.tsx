@@ -66,7 +66,6 @@ export function Cartridge({
     </a>
   );
 }
-
 export function useScreenTilt(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
@@ -101,3 +100,4 @@ export function useScreenTilt(enabled: boolean) {
     };
   }, [enabled]);
 }
+
