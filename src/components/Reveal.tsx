@@ -21,12 +21,19 @@ export function Reveal({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       node.classList.add("is-revealed");
+      node.dispatchEvent(
+        new CustomEvent("crt:reveal", { bubbles: true, detail: { node } }),
+      );
       return;
     }
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           node.classList.add("is-revealed");
+          // Let nested typewriter / glitch / scramble start only now
+          node.dispatchEvent(
+            new CustomEvent("crt:reveal", { bubbles: true, detail: { node } }),
+          );
           io.disconnect();
         }
       },

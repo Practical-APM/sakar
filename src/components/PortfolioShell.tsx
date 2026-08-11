@@ -14,6 +14,11 @@ import { InterestCards } from "./InterestCards";
 import { PixelStars } from "./PixelStars";
 import { PowerOn } from "./PowerOn";
 import { Reveal } from "./Reveal";
+import {
+  NeonText,
+  RetroMarquee,
+  ZoneHeader,
+} from "./RetroText";
 import { SkillsLoadout } from "./SkillsLoadout";
 
 const COLORS = ["#e76e55", "#209cee", "#92cc41", "#f7d51d", "#f06292"];
@@ -30,12 +35,16 @@ export function PortfolioShell() {
   const [booting, setBooting] = useState(true);
   const [ready, setReady] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [volume, setVolume] = useState(85);
+  const [bgmReady, setBgmReady] = useState(false);
   const [activeNav, setActiveNav] = useState("projects");
   const blips = useRef<ReturnType<typeof createBlipEngine> | null>(null);
 
   const audio = useMemo(() => {
     if (typeof window === "undefined") return null;
-    return createBlipEngine();
+    const engine = createBlipEngine();
+    engine.setVolume(0.85);
+    return engine;
   }, []);
 
   useEffect(() => {
@@ -76,8 +85,28 @@ export function PortfolioShell() {
   const toggleMute = () => {
     const next = !muted;
     setMuted(next);
-    blips.current?.setMuted(next);
-    if (!next) blips.current?.select();
+    if (!next) {
+      setBgmReady(false);
+      blips.current?.preload();
+      blips.current?.setVolume(volume / 100);
+      void blips.current?.setMuted(false)?.then(() => {
+        setBgmReady(true);
+        blips.current?.select();
+      });
+    } else {
+      void blips.current?.setMuted(true);
+      setBgmReady(false);
+    }
+  };
+
+  const onVolume = (value: number) => {
+    setVolume(value);
+    blips.current?.setVolume(value / 100);
+    if (muted && value > 0) {
+      setMuted(false);
+      setBgmReady(false);
+      void blips.current?.setMuted(false)?.then(() => setBgmReady(true));
+    }
   };
 
   const ping = () => blips.current?.select();
@@ -125,14 +154,29 @@ export function PortfolioShell() {
                 {profile.title} · {profile.location}
               </p>
             </div>
-            <button
-              type="button"
-              className={`nes-btn sound-toggle${muted ? "" : " is-success"}`}
-              onClick={toggleMute}
-              aria-pressed={!muted}
-            >
-              {muted ? "SFX OFF" : "SFX ON"}
-            </button>
+            <div className="sound-dock">
+              <button
+                type="button"
+                className={`nes-btn sound-toggle${muted ? "" : " is-success"}`}
+                onClick={toggleMute}
+                aria-pressed={!muted}
+              >
+                {muted ? "SOUND OFF" : bgmReady ? "SOUND ON" : "LOADING…"}
+              </button>
+              <label className={`vol-slider${muted ? " is-dim" : ""}`}>
+                <span aria-hidden>VOL</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={volume}
+                  onChange={(e) => onVolume(Number(e.target.value))}
+                  aria-label="Music volume"
+                />
+                <em>{volume}</em>
+              </label>
+            </div>
           </header>
 
           <nav className="pixel-nav" aria-label="Sections">
@@ -150,10 +194,7 @@ export function PortfolioShell() {
 
           <Reveal variant="punch">
             <section id="projects" className="pixel-zone">
-              <header className="zone-header">
-                <span className="zone-header__num">01</span>
-                <h2 className="zone-header__title">PROJECTS</h2>
-              </header>
+              <ZoneHeader num="01" title="PROJECTS" />
               <div className="stage-lane__rack stage-lane__rack--all">
                 {projects.map((p, i) => (
                   <Cartridge
@@ -176,30 +217,21 @@ export function PortfolioShell() {
 
           <Reveal variant="punch">
             <section id="experience" className="pixel-zone">
-              <header className="zone-header">
-                <span className="zone-header__num">02</span>
-                <h2 className="zone-header__title">EXPERIENCE</h2>
-              </header>
+              <ZoneHeader num="02" title="EXPERIENCE" />
               <ExperienceTimeline />
             </section>
           </Reveal>
 
           <Reveal variant="punch">
             <section id="skills" className="pixel-zone">
-              <header className="zone-header">
-                <span className="zone-header__num">03</span>
-                <h2 className="zone-header__title">STRENGTHS & SKILLS</h2>
-              </header>
+              <ZoneHeader num="03" title="STRENGTHS & SKILLS" />
               <SkillsLoadout />
             </section>
           </Reveal>
 
           <Reveal variant="punch">
             <section id="about" className="pixel-zone">
-              <header className="zone-header">
-                <span className="zone-header__num">04</span>
-                <h2 className="zone-header__title">ABOUT</h2>
-              </header>
+              <ZoneHeader num="04" title="ABOUT" />
               <AboutPanels />
             </section>
           </Reveal>
@@ -208,11 +240,21 @@ export function PortfolioShell() {
 
           <Reveal variant="punch">
             <section id="contact" className="pixel-zone">
-              <header className="zone-header">
-                <span className="zone-header__num">05</span>
-                <h2 className="zone-header__title">CONTACT</h2>
-              </header>
+              <ZoneHeader num="05" title="CONTACT" />
               <div className="nes-container is-rounded is-dark continue-panel">
+                <NeonText className="continue-panel__neon" as="p" color="var(--lime)">
+                  INSERT COIN TO CONTINUE
+                </NeonText>
+                <RetroMarquee
+                  className="continue-panel__ticker"
+                  items={[
+                    "OPEN TO ROLES",
+                    "AI PRODUCT",
+                    "GURUGRAM",
+                    "LET'S BUILD",
+                    profile.email,
+                  ]}
+                />
                 <div className="contact-row">
                   {socialLinks.map((link) => (
                     <a

@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { skills, strengths } from "@/data/experience";
+import { ScrambleText } from "./RetroText";
 
 const STRENGTH_META: Record<
   string,
@@ -27,7 +28,12 @@ export function SkillsLoadout() {
   return (
     <div className="loadout-grid loadout-grid--v2">
       <div className="loadout-col">
-        <h3 className="loadout-col__title">STRENGTHS</h3>
+        <ScrambleText
+          text="STRENGTHS"
+          className="loadout-col__title"
+          as="h3"
+          duration={650}
+        />
         <ul className="strength-grid">
           {strengths.map((s, i) => {
             const meta = STRENGTH_META[s] ?? {
@@ -64,7 +70,12 @@ export function SkillsLoadout() {
       </div>
 
       <div className="loadout-col">
-        <h3 className="loadout-col__title">TECHNICAL SKILLS</h3>
+        <ScrambleText
+          text="TECHNICAL SKILLS"
+          className="loadout-col__title"
+          as="h3"
+          duration={750}
+        />
         <div className="skill-board">
           {skills.map((skill, i) => (
             <div

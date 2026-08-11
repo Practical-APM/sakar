@@ -8,6 +8,7 @@ import {
   languages,
 } from "@/data/experience";
 import { profile } from "@/data/social";
+import { ScrambleText, Typewriter } from "./RetroText";
 
 const LANG_FILL: Record<string, number> = {
   Native: 100,
@@ -28,8 +29,8 @@ export function AboutPanels() {
         </div>
         <div className="about-v2__terminal-body">
           <p>
-            <span className="about-v2__prompt">&gt;</span> {profile.summary}
-            <span className="about-v2__cursor" aria-hidden />
+            <span className="about-v2__prompt">&gt;</span>{" "}
+            <Typewriter text={profile.summary} speed={18} startDelay={260} />
           </p>
         </div>
       </article>
@@ -42,7 +43,7 @@ export function AboutPanels() {
         </div>
         <div>
           <p className="about-v2__kicker">EDUCATION</p>
-          <h3>{education.degree}</h3>
+          <ScrambleText text={education.degree} as="h3" duration={1100} />
           <p className="about-v2__school">{education.school}</p>
           <p className="about-v2__meta">
             {education.period}
