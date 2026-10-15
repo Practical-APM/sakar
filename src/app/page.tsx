@@ -323,7 +323,6 @@ export default function Home() {
   const [activeNav, setActiveNav] = useState("hero");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [notesTab, setNotesTab] = useState<"principles" | "tartan" | "personal">("principles");
   const [activeDockTech, setActiveDockTech] = useState<string>("TypeScript");
   const [showToast, setShowToast] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
@@ -337,6 +336,7 @@ export default function Home() {
   const today = new Date();
   const dayName = today.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
   const dateNum = today.getDate();
+  const monthName = today.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
 
   const handleCopyEmail = useCallback(() => {
     navigator.clipboard.writeText("baxisakar18@gmail.com");
@@ -397,6 +397,13 @@ export default function Home() {
             Stack &amp; Skills
           </a>
           <a
+            href="#off-the-clock"
+            className={`nav-pill-item${activeNav === "off-the-clock" ? " active" : ""}`}
+            onClick={() => setActiveNav("off-the-clock")}
+          >
+            Off The Clock
+          </a>
+          <a
             href="#contact"
             className={`nav-pill-item${activeNav === "contact" ? " active" : ""}`}
             onClick={() => setActiveNav("contact")}
@@ -433,7 +440,7 @@ export default function Home() {
               <div className="bento-card hero-intro-card">
                 <div>
                   <h1 className="hero-title">
-                    <strong>Sakar</strong> is a Product Analyst &amp; Builder based in <strong>Gurugram</strong>.
+                    <strong>Sakar</strong> is a Product Manager &amp; Builder based in <strong>Gurugram</strong>.
                   </h1>
                   <p className="hero-body-p">
                     Welcome to my personal corner of the web.
@@ -487,50 +494,86 @@ export default function Home() {
 
               {/* Card 3: Interactive Apple Calendar Widget (Linked to Calendly) */}
               <div className="bento-card calendar-card">
-                <div>
-                  <div className="calendar-header">
-                    <div>
-                      <span className="cal-day-label">{dayName}</span>
-                      <div className="cal-date-number">{dateNum}</div>
+                {/* Header: Date + Live Status + Calendly Quick Icon */}
+                <div className="calendar-header">
+                  <div className="cal-date-lockup">
+                    <span className="cal-day-label">{dayName}</span>
+                    <div className="cal-date-row">
+                      <span className="cal-date-number">{dateNum}</span>
+                      <div className="cal-date-meta">
+                        <span className="cal-month-pill">{monthName}</span>
+                        <span className="cal-tz-label">IST · Remote</span>
+                      </div>
                     </div>
-                    <button
-                      onClick={handleOpenCalendly}
-                      className="cal-arrow-btn"
-                      aria-label="Book a chat on Calendly"
-                      title="Book via Calendly"
-                    >
-                      <ArrowUpRight />
-                    </button>
                   </div>
+                  <button
+                    onClick={handleOpenCalendly}
+                    className="cal-arrow-btn"
+                    aria-label="Book a chat on Calendly"
+                    title="Book via Calendly"
+                  >
+                    <ArrowUpRight />
+                  </button>
+                </div>
 
+                {/* Slots section */}
+                <div className="cal-slots-section">
+                  <div className="cal-section-tag">
+                    <span className="cal-live-dot" />
+                    <span>Today&apos;s Schedule</span>
+                  </div>
                   <div className="cal-slots-list">
                     <div className="cal-slot-item booked">
-                      <span>• B2B Workflow Deep-dive</span>
-                      <span>Booked</span>
+                      <div className="cal-slot-meta">
+                        <span className="cal-slot-time">10:30 AM</span>
+                        <span className="cal-slot-title">B2B Workflow Review</span>
+                      </div>
+                      <span className="cal-status-tag booked">Booked</span>
                     </div>
                     <div className="cal-slot-item booked">
-                      <span>• AI FinOps Review</span>
-                      <span>Booked</span>
+                      <div className="cal-slot-meta">
+                        <span className="cal-slot-time">02:00 PM</span>
+                        <span className="cal-slot-title">AI FinOps Sync</span>
+                      </div>
+                      <span className="cal-status-tag booked">Booked</span>
                     </div>
                     <button
                       onClick={handleOpenCalendly}
                       className="cal-slot-item open"
                       title="Click to reserve this 30-min slot on Calendly"
                     >
-                      <span className="cal-live-dot-wrap">
-                        <span className="cal-live-dot" />
-                        <span>Open slot · 30 min</span>
-                      </span>
-                      <span>Available →</span>
+                      <div className="cal-slot-meta">
+                        <span className="cal-slot-time open-time">04:30 PM</span>
+                        <span className="cal-slot-title">30-min Intro Call</span>
+                      </div>
+                      <span className="cal-status-tag open">Open · Book ↗</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="cal-footer-note">
-                  <div className="cal-footer-split">
-                    <span>Open for coffee, PM advisory, or 0→1 builds.</span>
-                    <span className="cal-service-badge">Calendly</span>
+                {/* Quick Topics to purposefully balance card height */}
+                <div className="cal-topics-section">
+                  <span className="cal-topics-title">Topics I jam on:</span>
+                  <div className="cal-topics-tags">
+                    <span className="cal-topic-pill">0→1 Products</span>
+                    <span className="cal-topic-pill">Enterprise FinTech</span>
+                    <span className="cal-topic-pill">AI Spend / FinOps</span>
                   </div>
+                </div>
+
+                {/* Footer Action: Prominent Calendly CTA */}
+                <div className="cal-footer-block">
+                  <button
+                    onClick={handleOpenCalendly}
+                    className="cal-booking-cta-btn"
+                    title="Open Calendly in a new tab"
+                  >
+                    <span>Schedule 30 mins</span>
+                    <ArrowUpRight />
+                  </button>
+                  <p className="cal-footer-subtext">
+                    Open for coffee, PM advisory, or 0→1 builds.
+                  </p>
                 </div>
               </div>
 
@@ -647,7 +690,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* macOS Notes Widget */}
+              {/* macOS Notes Widget: How I Build */}
               <div className="bento-card notes-card">
                 <div className="notes-window-top">
                   <div className="mac-dots">
@@ -655,103 +698,33 @@ export default function Home() {
                     <span className="mac-dot yellow" />
                     <span className="mac-dot green" />
                   </div>
-                  <div className="notes-tabs">
-                    <button
-                      className={`notes-tab-btn${notesTab === "principles" ? " active" : ""}`}
-                      onClick={() => setNotesTab("principles")}
-                    >
-                      📝 How I Build
-                    </button>
-                    <button
-                      className={`notes-tab-btn${notesTab === "tartan" ? " active" : ""}`}
-                      onClick={() => setNotesTab("tartan")}
-                    >
-                      ⚡️ TartanHQ Notes
-                    </button>
-                    <button
-                      className={`notes-tab-btn${notesTab === "personal" ? " active" : ""}`}
-                      onClick={() => setNotesTab("personal")}
-                    >
-                      ⚽️ Off The Clock
-                    </button>
+                  <div className="notes-doc-badge">
+                    <span>📝 how-i-build.md</span>
+                  </div>
+                  <div className="notes-status-badge">
+                    <span>3 Core Principles</span>
                   </div>
                 </div>
 
                 <div className="notes-content-body">
-                  {notesTab === "principles" && (
-                    <div>
-                      <div className="note-item">
-                        <span className="note-num">01</span>
-                        <div className="note-text-wrap">
-                          <strong>Build small, test with real people.</strong> Huge 60-page requirement docs rarely survive first contact with users. Build a simple working version, put it in front of real people, and let actual feedback shape what comes next.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">02</span>
-                        <div className="note-text-wrap">
-                          <strong>Delete the unnecessary steps.</strong> Most complex software doesn&apos;t need more buttons or settings. It needs fewer roadblocks. Making things fast starts with eliminating manual handoffs.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">03</span>
-                        <div className="note-text-wrap">
-                          <strong>Speak code and customer.</strong> The best product decisions happen when you can sit with an engineer to debug an issue and hop on a call with a customer to understand their daily frustration.
-                        </div>
-                      </div>
+                  <div className="note-item">
+                    <span className="note-num">01</span>
+                    <div className="note-text-wrap">
+                      <strong>Ship a prototype before writing a thesis.</strong> Huge 30-page requirement docs make teams feel productive, but nobody actually reads them. I keep specs down to a single clean page: the core user friction, edge cases, and rough wireframes. If an engineer and I can&apos;t test a rough working demo by day three, the scope is already too bloated.
                     </div>
-                  )}
-
-                  {notesTab === "tartan" && (
-                    <div>
-                      <div className="note-item">
-                        <span className="note-num">01</span>
-                        <div className="note-text-wrap">
-                          <strong>HDFC Bank Onboarding:</strong> Rebuilt the account opening flow from 12 manual steps into an automated digital journey, cutting processing time by 60% and reducing abandoned signups.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">02</span>
-                        <div className="note-text-wrap">
-                          <strong>Connecting 90+ Systems:</strong> Shipped 90+ direct software connections for enterprise clients like MakeMyTrip, maintaining 100% uptime and zero data incidents.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">03</span>
-                        <div className="note-text-wrap">
-                          <strong>Team Leadership:</strong> Guided a team of 10 developers, unblocking technical roadblocks and keeping delivery schedules predictable.
-                        </div>
-                      </div>
+                  </div>
+                  <div className="note-item">
+                    <span className="note-num">02</span>
+                    <div className="note-text-wrap">
+                      <strong>Watch where people quietly get stuck.</strong> You learn ten times more from 15 minutes of watching an ops teammate quietly struggle through an onboarding journey than from two weeks of roadmap slides. The fastest way to make software feel fast is deleting unnecessary steps, not adding explanations.
                     </div>
-                  )}
-
-                  {notesTab === "personal" && (
-                    <div>
-                      <div className="note-item">
-                        <span className="note-num">⚽️</span>
-                        <div className="note-text-wrap">
-                          <strong>Liverpool FC:</strong> Passionate Red lifer. European nights at Anfield are the benchmark for high energy.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">📚</span>
-                        <div className="note-text-wrap">
-                          <strong>Currently Reading:</strong> Re-reading George Orwell&apos;s <em>1984</em> alongside essays on personal computing and distributed intelligence.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">🎸</span>
-                        <div className="note-text-wrap">
-                          <strong>Soundtrack:</strong> 2000s indie rock (The Strokes, Arctic Monkeys, Phoenix) paired with deep focus downtempo.
-                        </div>
-                      </div>
-                      <div className="note-item">
-                        <span className="note-num">📺</span>
-                        <div className="note-text-wrap">
-                          <strong>The Sitcom Hierarchy:</strong> The Big Bang Theory &gt;&gt;&gt; How I Met Your Mother &gt;&gt;&gt; Friends. Undisputed.
-                        </div>
-                      </div>
+                  </div>
+                  <div className="note-item">
+                    <span className="note-num">03</span>
+                    <div className="note-text-wrap">
+                      <strong>Get under the hood with engineering.</strong> I don&apos;t just drop Figma links in Slack and wait for sprint reviews. Reading API payloads, understanding database tables, and knowing why a query is slow means I can debug alongside engineers at 6 PM instead of filing another vague ticket.
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
@@ -859,6 +832,7 @@ export default function Home() {
                   <div className="app-preview-pane">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={proj.preview} alt={`${proj.name} preview`} />
+                    <div className="app-preview-glass" aria-hidden="true" />
                   </div>
                   <div className="app-body-pane">
                     <div className="app-title-row">
@@ -950,6 +924,140 @@ export default function Home() {
               ))}
             </div>
 
+          </div>
+        </section>
+
+        {/* ── OFF THE CLOCK / PASSIONS & LIFE ── */}
+        <section id="off-the-clock" className="section-wrapper" aria-labelledby="off-clock-head">
+          <div className="container">
+            <div className="section-head-with-sticker">
+              <div>
+                <div className="section-eyebrow-tag">Life Outside The Terminal</div>
+                <h2 id="off-clock-head" className="section-head-title">
+                  Off The Clock.<br />Passions, Debates &amp; Rabbit Holes.
+                </h2>
+                <p className="section-head-desc">
+                  What keeps me energised, intensely curious, and occasionally arguing on the internet once the laptop closes.
+                </p>
+              </div>
+            </div>
+
+            <div className="off-clock-grid">
+              {/* Card 1: Liverpool FC */}
+              <div className="off-clock-card liverpool-card">
+                <div className="off-clock-card-media">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/interests/klopp_fist_pump.gif"
+                    alt="Jurgen Klopp iconic triple fist pump celebration in front of the Kop at Anfield"
+                    className="off-clock-img"
+                  />
+                  <div className="off-clock-media-overlay" />
+                  <div className="off-clock-badge lfc-badge">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/interests/liverpool.png" alt="Liverpool FC Crest" className="lfc-crest-mini" />
+                    <span>Red Lifer · Anfield</span>
+                  </div>
+                </div>
+                <div className="off-clock-content">
+                  <div className="off-clock-title-row">
+                    <h3 className="off-clock-card-title">Liverpool FC</h3>
+                    <span className="off-clock-tag">YNWA</span>
+                  </div>
+                  <p className="off-clock-desc">
+                    Passionate Red lifer. European nights at Anfield under the floodlights are the absolute benchmark for high energy, resilience, and collective belief. Win, lose, or 95th-minute winner—you’ll never walk alone.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2: The Sitcom Hierarchy */}
+              <div className="off-clock-card sitcom-card">
+                <div className="off-clock-card-media">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/interests/sheldon_bazinga.gif"
+                    alt="Sheldon Cooper pointing with a smile: Bazinga!"
+                    className="off-clock-img"
+                  />
+                  <div className="off-clock-media-overlay" />
+                  <div className="off-clock-badge tier-badge">
+                    <span>⚡️ Undisputed Ranking</span>
+                  </div>
+                </div>
+                <div className="off-clock-content">
+                  <div className="off-clock-title-row">
+                    <h3 className="off-clock-card-title">The Sitcom Hierarchy</h3>
+                    <span className="off-clock-tag">TBBT &gt;&gt;&gt; HIMYM &gt;&gt;&gt; Friends</span>
+                  </div>
+                  <p className="off-clock-desc">
+                    The hill I will happily defend: <em>The Big Bang Theory</em> &gt;&gt;&gt; <em>How I Met Your Mother</em> &gt;&gt;&gt; <em>Friends</em>. Sheldon Cooper’s applied physics logic over Central Perk couch chit-chat, any day of the week.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3: Late-Night Reading & Rabbit Holes */}
+              <div className="off-clock-card reading-card">
+                <div className="off-clock-card-media">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/interests/cat_military_strategy.gif"
+                    alt="Orange and white cat intently reading The Art of Military Strategy"
+                    className="off-clock-img"
+                  />
+                  <div className="off-clock-media-overlay" />
+                  <div className="off-clock-badge book-badge">
+                    <span>📖 On The Nightstand</span>
+                  </div>
+                </div>
+                <div className="off-clock-content">
+                  <div className="off-clock-title-row">
+                    <h3 className="off-clock-card-title">Late-Night Reading</h3>
+                    <span className="off-clock-tag">1984 &amp; Tech Essays</span>
+                  </div>
+                  <p className="off-clock-desc">
+                    Currently re-reading George Orwell’s <em>1984</em> alongside essays on personal computing, distributed intelligence, and early Internet protocol design. Fascinated by architectural systems that outlive their founders.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 4: Soundtrack & Focus Rotation */}
+              <div className="off-clock-card music-card">
+                <div className="off-clock-card-media">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/interests/kid_dancing_club.gif"
+                    alt="Kid with sunglasses bouncing excitedly in the club"
+                    className="off-clock-img"
+                  />
+                  <div className="off-clock-media-overlay" />
+                  <div className="off-clock-badge music-badge">
+                    <span>🎸 Daily Fuel</span>
+                  </div>
+                </div>
+                <div className="off-clock-content">
+                  <div className="off-clock-title-row">
+                    <h3 className="off-clock-card-title">Soundtrack &amp; Indie Rotation</h3>
+                    <span className="off-clock-tag">Indie Rock &amp; Focus</span>
+                  </div>
+                  <p className="off-clock-desc">
+                    2000s indie rock on heavy rotation (The Local Train, Jal, Silk Route, The Strokes, Arctic Monkeys) paired with deep-focus downtempo when shipping code late into the night.
+                  </p>
+                  <div className="off-clock-footer-action">
+                    <a
+                      href="#hero"
+                      className="off-clock-player-link"
+                      onClick={() => {
+                        setCurrentTrackIndex(0);
+                        setIsPlaying(true);
+                      }}
+                    >
+                      <span>Listen on rotation player ↑</span>
+                      <ArrowUpRight />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
