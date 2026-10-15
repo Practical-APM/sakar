@@ -956,7 +956,7 @@ export default function Home() {
                   <div className="off-clock-badge lfc-badge">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/interests/liverpool.png" alt="Liverpool FC Crest" className="lfc-crest-mini" />
-                    <span>Red Lifer · Anfield</span>
+                    <span>Reds · Anfield</span>
                   </div>
                 </div>
                 <div className="off-clock-content">
@@ -965,7 +965,7 @@ export default function Home() {
                     <span className="off-clock-tag">YNWA</span>
                   </div>
                   <p className="off-clock-desc">
-                    Passionate Red lifer. European nights at Anfield under the floodlights are the absolute benchmark for high energy, resilience, and collective belief. Win, lose, or 95th-minute winner—you’ll never walk alone.
+                    Passionate LFC fan. I will watch the 2006 Istanbul final for the 100th time and still celebrate like it's the first time. YNWA.
                   </p>
                 </div>
               </div>
@@ -990,7 +990,7 @@ export default function Home() {
                     <span className="off-clock-tag">TBBT &gt;&gt;&gt; HIMYM &gt;&gt;&gt; Friends</span>
                   </div>
                   <p className="off-clock-desc">
-                    The hill I will happily defend: <em>The Big Bang Theory</em> &gt;&gt;&gt; <em>How I Met Your Mother</em> &gt;&gt;&gt; <em>Friends</em>. Sheldon Cooper’s applied physics logic over Central Perk couch chit-chat, any day of the week.
+                    No point discussing why: <em>The Big Bang Theory</em> &gt;&gt;&gt; <em>How I Met Your Mother</em> &gt;&gt;&gt; <em>Friends</em>. Being a STEM nerd comes with it's own perks
                   </p>
                 </div>
               </div>
@@ -1012,10 +1012,10 @@ export default function Home() {
                 <div className="off-clock-content">
                   <div className="off-clock-title-row">
                     <h3 className="off-clock-card-title">Late-Night Reading</h3>
-                    <span className="off-clock-tag">1984 &amp; Tech Essays</span>
+                    <span className="off-clock-tag">1984 &amp; Medium articles</span>
                   </div>
                   <p className="off-clock-desc">
-                    Currently re-reading George Orwell’s <em>1984</em> alongside essays on personal computing, distributed intelligence, and early Internet protocol design. Fascinated by architectural systems that outlive their founders.
+                    Currently re-reading George Orwell’s <em>1984</em> alongside latest patent filings. Fascinated by tech, philosophy, psychology and more.
                   </p>
                 </div>
               </div>
@@ -1077,7 +1077,7 @@ export default function Home() {
                   aria-label="Book 30-min call on Calendly"
                 >
                   <ArrowUpRight />
-                  <span>Book on Calendly</span>
+                  <span>Book a Call</span>
                 </button>
 
                 <button
@@ -1119,7 +1119,7 @@ export default function Home() {
             </div>
 
             <footer className="footer-bar" role="contentinfo">
-              <span>© {new Date().getFullYear()} Sakar Baxi · Built with Next.js & TypeScript · Gurugram, India</span>
+              <span>© {new Date().getFullYear()} Sakar Baxi · Built with love · Gurugram, India</span>
               <div style={{ display: "flex", gap: "16px" }}>
                 <a href="#hero">Back to top ↑</a>
                 <a href="https://github.com/Practical-APM" target="_blank" rel="noopener noreferrer">Practical-APM</a>

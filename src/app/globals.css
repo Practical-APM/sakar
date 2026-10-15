@@ -200,7 +200,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .bento-hero-grid {
   display: grid;
-  grid-template-columns: 1.35fr 0.78fr 1.05fr;
+  grid-template-columns: 1.3fr 0.9fr 0.95fr;
   gap: 16px;
   align-items: stretch;
 }
@@ -330,7 +330,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
+  object-position: 65% 25%;
   transition: transform 0.4s ease;
 }
 
