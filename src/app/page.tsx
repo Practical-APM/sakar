@@ -151,13 +151,19 @@ function LaptopSticker({
   return (
     <div
       className={`laptop-sticker-wrap ${wobble ? "is-wobbling" : ""} ${className}`}
-      style={{ "--sticker-rot": rotation } as React.CSSProperties}
+      style={
+        {
+          "--sticker-rot": rotation,
+          "--sticker-w": `${width}px`,
+          "--sticker-h": `${height}px`,
+        } as React.CSSProperties
+      }
       onClick={triggerWobble}
       onMouseEnter={triggerWobble}
       role="img"
       aria-label={alt}
     >
-      <div className="laptop-sticker-diecut" style={{ width, height }}>
+      <div className="laptop-sticker-diecut">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={alt} className="laptop-sticker-img" />
         <div className="laptop-sticker-sheen" />
@@ -737,22 +743,22 @@ export default function Home() {
         <section id="work" className="section-wrapper" aria-labelledby="work-head">
           <div className="container">
             <div className="section-head-with-sticker">
-              <div>
-                <div className="section-eyebrow-tag">Real Work / Real Impact</div>
-                <h2 id="work-head" className="section-head-title">Problems I&apos;ve Solved.<br />Measurable Outcomes.</h2>
-                <p className="section-head-desc">
-                  Real business problems solved with simple systems and verified impact. No confusing buzzwords, no vague claims.
-                </p>
-              </div>
               <div className="section-sticker-anchor">
                 <LaptopSticker
                   src="/cat.jpg"
                   alt="Side-eye cat meme sticker"
-                  rotation="-7deg"
-                  width={105}
-                  height={105}
+                  rotation="-5deg"
+                  width={96}
+                  height={96}
                 />
               </div>
+              <div className="section-head-title-wrap">
+                <div className="section-eyebrow-tag">Real Work / Real Impact</div>
+                <h2 id="work-head" className="section-head-title">Problems I&apos;ve Solved.<br />Measurable Outcomes.</h2>
+              </div>
+              <p className="section-head-desc">
+                Real business problems solved with simple systems and verified impact. No confusing buzzwords, no vague claims.
+              </p>
             </div>
 
             <div className="case-study-dossier-grid">
@@ -808,22 +814,22 @@ export default function Home() {
         <section id="projects" className="section-wrapper" aria-labelledby="projects-head">
           <div className="container">
             <div className="section-head-with-sticker">
-              <div>
-                <div className="section-eyebrow-tag">Practical-APM / Shipped Projects</div>
-                <h2 id="projects-head" className="section-head-title">Built Outside Work.<br />Working Apps for Real People.</h2>
-                <p className="section-head-desc">
-                  All 6 live products and open-source projects from <a href="https://github.com/Practical-APM" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-1)", textDecoration: "underline" }}>github.com/Practical-APM</a>. Real code, real users, real problems solved.
-                </p>
-              </div>
               <div className="section-sticker-anchor">
                 <LaptopSticker
                   src="/monkey.png"
                   alt="Monkey clutching head meme sticker"
-                  rotation="-8deg"
-                  width={125}
-                  height={125}
+                  rotation="-6deg"
+                  width={96}
+                  height={96}
                 />
               </div>
+              <div className="section-head-title-wrap">
+                <div className="section-eyebrow-tag">Practical-APM / Shipped Projects</div>
+                <h2 id="projects-head" className="section-head-title">Built Outside Work.<br />Working Apps for Real People.</h2>
+              </div>
+              <p className="section-head-desc">
+                All 6 live products and open-source projects from <a href="https://github.com/Practical-APM" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-1)", textDecoration: "underline" }}>github.com/Practical-APM</a>. Real code, real users, real problems solved.
+              </p>
             </div>
 
             <div className="apps-bento-grid">
@@ -863,22 +869,22 @@ export default function Home() {
         <section id="skills" className="section-wrapper" aria-labelledby="skills-head">
           <div className="container">
             <div className="section-head-with-sticker">
-              <div>
-                <div className="section-eyebrow-tag">How I Work</div>
-                <h2 id="skills-head" className="section-head-title">Hands-On Tech Stack &<br />Everyday Product Skills.</h2>
-                <p className="section-head-desc">
-                  Tools I build with daily, backed by clear communication and dependable execution. Hover any icon in the dock to inspect tools.
-                </p>
-              </div>
               <div className="section-sticker-anchor">
                 <LaptopSticker
                   src="/disaster.jpg"
                   alt="Disaster Sakar meme sticker"
-                  rotation="7deg"
-                  width={115}
-                  height={115}
+                  rotation="5deg"
+                  width={96}
+                  height={96}
                 />
               </div>
+              <div className="section-head-title-wrap">
+                <div className="section-eyebrow-tag">How I Work</div>
+                <h2 id="skills-head" className="section-head-title">Hands-On Tech Stack &<br />Everyday Product Skills.</h2>
+              </div>
+              <p className="section-head-desc">
+                Tools I build with daily, backed by clear communication and dependable execution. Hover any icon in the dock to inspect tools.
+              </p>
             </div>
 
             {/* Apple macOS Interactive Dock */}

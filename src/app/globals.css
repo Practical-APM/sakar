@@ -1364,26 +1364,35 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ─── SECTION HEAD WITH LAPTOP STICKER ───────────────────────── */
 .section-head-with-sticker {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "sticker titles"
+    "sticker desc";
+  column-gap: 22px;
+  row-gap: 6px;
+  align-items: start;
+  margin-bottom: 28px;
 }
 
 .section-sticker-anchor {
-  flex-shrink: 0;
+  grid-area: sticker;
   padding-top: 4px;
+  flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-  .section-head-with-sticker {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-  }
-  .section-sticker-anchor {
-    margin-bottom: 12px;
-  }
+.section-head-title-wrap {
+  grid-area: titles;
+}
+
+.section-head-desc {
+  grid-area: desc;
+  font-size: 15px;
+  color: var(--text-3);
+  max-width: 640px;
+  margin-bottom: 0;
+  line-height: 1.6;
 }
 
 /* ─── MACBOOK DIE-CUT LAPTOP STICKERS (MEMES) ──────────────── */
@@ -1416,6 +1425,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .laptop-sticker-diecut {
   position: relative;
+  width: var(--sticker-w, 96px);
+  height: var(--sticker-h, 96px);
+  aspect-ratio: 1 / 1;
   background: #ffffff;
   padding: 4px;
   border-radius: 16px;
@@ -1916,16 +1928,48 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 @media (max-width: 768px) {
   .section-head-with-sticker {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "sticker titles"
+      "desc    desc";
+    column-gap: 14px;
+    row-gap: 12px;
+    align-items: center;
+    margin-bottom: 22px;
   }
   .section-sticker-anchor {
-    margin-bottom: 6px;
+    grid-area: sticker;
+    padding-top: 0;
+    align-self: center;
   }
-  .laptop-sticker-wrap img {
-    max-width: 95px !important;
-    height: auto !important;
+  .section-head-title-wrap {
+    grid-area: titles;
+  }
+  .section-head-title {
+    font-size: 21px;
+    line-height: 1.25;
+    margin-bottom: 0;
+  }
+  .section-eyebrow-tag {
+    margin-bottom: 3px;
+    font-size: 10px;
+  }
+  .section-head-desc {
+    grid-area: desc;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-2);
+    margin-bottom: 0;
+  }
+  .laptop-sticker-diecut {
+    width: clamp(66px, 18vw, 76px) !important;
+    height: clamp(66px, 18vw, 76px) !important;
+    border-radius: 13px !important;
+    padding: 3px !important;
+  }
+  .laptop-sticker-img {
+    border-radius: 10px !important;
   }
   .section-wrapper {
     padding: 50px 0 15px;
