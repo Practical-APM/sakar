@@ -1591,6 +1591,8 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                       <img
                         src={`https://img.youtube.com/vi/${currentTrack.youtubeId}/hqdefault.jpg`}
                         alt={currentTrack.title}
+                        loading="lazy"
+                        draggable={false}
                       />
                       {isPlaying && (
                         <div className="ytm-live-chip">
