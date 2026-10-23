@@ -2550,23 +2550,29 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                   </div>
                   <div className="app-body-pane">
                     <div className="app-title-row">
-                      <h3 className="app-name">{proj.name}</h3>
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <div className="app-title-group">
+                        <h3 className="app-name">{proj.name}</h3>
                         <span className="app-status-badge">
                           <span className="app-status-dot" />
                           <span>Live</span>
                         </span>
-                        <span className="app-category-badge">{proj.category}</span>
                       </div>
+                      <span className="app-category-badge">{proj.tag}</span>
                     </div>
+                    <div className="app-category-sub">{proj.category}</div>
                     <p className="app-desc-p">{proj.desc}</p>
                     {proj.tech && proj.tech.length > 0 && (
                       <div className="app-tech-tags" aria-label="Technologies used">
-                        {proj.tech.map((t) => (
+                        {proj.tech.slice(0, 4).map((t) => (
                           <span key={t} className="app-tech-chip">
                             {t}
                           </span>
                         ))}
+                        {proj.tech.length > 4 && (
+                          <span className="app-tech-chip" title={proj.tech.slice(4).join(", ")}>
+                            +{proj.tech.length - 4}
+                          </span>
+                        )}
                       </div>
                     )}
                     <div className="app-actions-row">
@@ -2576,19 +2582,34 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                           const matchingCs = caseStudies.find((c) => c.id === proj.id);
                           if (matchingCs) setSelectedCaseStudy(matchingCs);
                         }}
-                        className="app-link-btn highlight"
+                        className="app-btn-case"
                         title={`Read Case Study for ${proj.name}`}
                       >
-                        <FileTextIcon /> Case Study
+                        <FileTextIcon />
+                        <span>Case Study</span>
                       </button>
                       {proj.live && (
-                        <a href={proj.live} target="_blank" rel="noopener noreferrer" className="app-link-btn primary">
-                          <ArrowUpRight /> Launch App
+                        <a
+                          href={proj.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="app-btn-live"
+                          title={`Launch ${proj.name} web app`}
+                        >
+                          <span>Live App</span>
+                          <ArrowUpRight />
                         </a>
                       )}
                       {proj.github && (
-                        <a href={proj.github} target="_blank" rel="noopener noreferrer" className="app-link-btn">
-                          <Github /> Source Repo
+                        <a
+                          href={proj.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="app-btn-code"
+                          title={`View ${proj.name} repository on GitHub`}
+                          aria-label={`${proj.name} GitHub Repository`}
+                        >
+                          <Github />
                         </a>
                       )}
                     </div>
