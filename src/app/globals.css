@@ -1753,13 +1753,19 @@ button:focus-visible, a:focus-visible {
   background: rgba(245, 245, 248, 0.45);
 }
 
-.app-widget-card:hover .app-preview-glass {
+.app-widget-card:hover .app-preview-glass,
+.app-widget-card:active .app-preview-glass,
+.app-widget-card:focus-within .app-preview-glass,
+.app-widget-card.touch-active .app-preview-glass {
   opacity: 0;
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px);
 }
 
-.app-widget-card:hover .app-preview-pane img {
+.app-widget-card:hover .app-preview-pane img,
+.app-widget-card:active .app-preview-pane img,
+.app-widget-card:focus-within .app-preview-pane img,
+.app-widget-card.touch-active .app-preview-pane img {
   transform: scale(1.04);
   opacity: 1;
   filter: grayscale(0%) contrast(1) brightness(1);
@@ -2787,14 +2793,6 @@ button:focus-visible, a:focus-visible {
   .app-preview-pane {
     height: 185px;
   }
-  .app-preview-pane img {
-    opacity: 0.95 !important;
-    filter: none !important;
-  }
-  .app-preview-glass {
-    opacity: 0 !important;
-    display: none !important;
-  }
   .app-body-pane {
     padding: 16px 14px 18px;
   }
@@ -3211,17 +3209,7 @@ button:focus-visible, a:focus-visible {
   animation: pulseDot 2s infinite ease-in-out;
 }
 
-/* ─── MOBILE TOUCH FIX: UNBLUR PREVIEWS ON HOVER:NONE ─────────── */
-@media (hover: none) {
-  .app-preview-pane img {
-    opacity: 0.95 !important;
-    filter: none !important;
-    transform: none !important;
-  }
-  .app-preview-glass {
-    display: none !important;
-  }
-}
+
 
 /* ─── CASE STUDY SHARE LINK & TARGET FOCUS ──────────────────────── */
 .case-dossier-card {

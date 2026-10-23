@@ -653,6 +653,7 @@ export default function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [istTime, setIstTime] = useState("");
   const [selectedProjectTag, setSelectedProjectTag] = useState<string>("All");
+  const [activeTouchProjectId, setActiveTouchProjectId] = useState<string | null>(null);
   const [copiedCaseId, setCopiedCaseId] = useState<string | null>(null);
   const [activeNotesTab, setActiveNotesTab] = useState<"principles" | "framework" | "recruiter">("principles");
   const [summaryCopied, setSummaryCopied] = useState(false);
@@ -2095,7 +2096,14 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
               {sideProjects
                 .filter((proj) => selectedProjectTag === "All" || proj.tag === selectedProjectTag)
                 .map((proj) => (
-                <article key={proj.id} className="app-widget-card">
+                <article
+                  key={proj.id}
+                  className={`app-widget-card${activeTouchProjectId === proj.id ? " touch-active" : ""}`}
+                  onTouchStart={() => setActiveTouchProjectId(proj.id)}
+                  onClick={() => {
+                    setActiveTouchProjectId((prev) => (prev === proj.id ? null : proj.id));
+                  }}
+                >
                   <div
                     className="app-preview-pane"
                     onClick={() => {
