@@ -1555,6 +1555,20 @@ button:focus-visible, a:focus-visible {
   color: #fff;
 }
 
+.app-link-btn.highlight {
+  color: var(--blue);
+  background: rgba(0, 107, 255, 0.08);
+  border-color: rgba(0, 107, 255, 0.28);
+  cursor: pointer;
+}
+
+.app-link-btn.highlight:hover {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+
 /* ─── STANDARD SECTION HEAD (WITHOUT STICKER) ─────────────────── */
 .section-head-standard {
   margin-bottom: 28px;
