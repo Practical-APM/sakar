@@ -1108,6 +1108,7 @@ button:focus-visible, a:focus-visible {
   padding: 24px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .notes-window-top {
@@ -1162,13 +1163,38 @@ button:focus-visible, a:focus-visible {
 .notes-content-body {
   font-size: 13.5px;
   color: var(--text-2);
-  line-height: 1.6;
+  line-height: 1.55;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.notes-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.notes-file-slug {
+  opacity: 0.8;
+}
+
+.notes-meta-tag {
+  opacity: 0.65;
+  font-size: 10.5px;
 }
 
 .note-item {
   display: flex;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 11px;
 }
 
 .note-num {
@@ -1391,16 +1417,17 @@ button:focus-visible, a:focus-visible {
     grid-template-columns: 1fr;
   }
   .case-stack-deck {
-    padding-top: 36px;
-    padding-right: 28px;
+    padding-top: 24px;
+    padding-right: 14px;
+    margin-bottom: 36px;
   }
   .case-stack-item.state-1 {
-    width: calc(100% - 28px);
-    transform: translate3d(14px, -16px, -20px) rotate(0.8deg);
+    width: 100%;
+    transform: translate3d(6px, -12px, -20px) rotate(0.4deg);
   }
   .case-stack-item.state-2 {
-    width: calc(100% - 28px);
-    transform: translate3d(28px, -32px, -40px) rotate(1.6deg);
+    width: 100%;
+    transform: translate3d(12px, -24px, -40px) rotate(0.8deg);
   }
 }
 
@@ -1442,6 +1469,7 @@ button:focus-visible, a:focus-visible {
 
 .case-tags-wrap {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 12px;
 }
@@ -1471,14 +1499,92 @@ button:focus-visible, a:focus-visible {
 .case-company-sub {
   font-size: 13px;
   color: var(--text-3);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-weight: 500;
 }
 
-.case-desc-p {
-  font-size: 14px;
+.case-summary-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.case-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.case-summary-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  width: fit-content;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+}
+
+.case-summary-badge.challenge {
+  color: #ff9f0a;
+  background: rgba(255, 159, 10, 0.12);
+  border: 1px solid rgba(255, 159, 10, 0.25);
+}
+
+.case-summary-badge.delivery {
+  color: var(--blue);
+  background: rgba(10, 132, 255, 0.12);
+  border: 1px solid rgba(10, 132, 255, 0.25);
+}
+
+.case-summary-text {
+  font-size: 13px;
   color: var(--text-2);
-  line-height: 1.65;
+  line-height: 1.5;
+}
+
+.case-desc-p {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* Recruiter Highlight Grid in Notes */
+.recruiter-highlight-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.recruiter-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.recruiter-stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recruiter-stat-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-1);
+  text-align: right;
 }
 
 .case-metrics-column {
@@ -1529,6 +1635,8 @@ button:focus-visible, a:focus-visible {
   color: var(--text-1);
   cursor: pointer;
   transition: all 0.18s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .case-inspect-btn:hover {
@@ -2615,22 +2723,61 @@ button:focus-visible, a:focus-visible {
     gap: 8px;
   }
 
-  /* Case Studies Mobile */
-  .case-study-card {
-    padding: 18px;
-  }
-  .case-metrics-grid {
-    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  /* Case Studies Dossier on Mobile */
+  .case-card-header {
+    padding: 10px 14px;
     gap: 8px;
   }
-  .case-metric-box {
-    padding: 10px;
+  .case-window-title {
+    display: none !important;
   }
-  .metric-num {
-    font-size: 22px;
+  .case-header-actions {
+    gap: 6px;
+    flex-shrink: 0;
   }
-  .metric-label {
-    font-size: 10.5px;
+  .case-inspect-btn,
+  .case-share-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+  .case-card-content {
+    padding: 18px 14px;
+    gap: 16px;
+  }
+  .case-main-h3 {
+    font-size: 19px;
+    line-height: 1.25;
+  }
+  .case-metrics-column {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+  .metric-block {
+    padding: 10px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .metric-big-num {
+    font-size: 18px;
+    letter-spacing: -0.03em;
+  }
+  .metric-sub-label {
+    font-size: 9.5px;
+    line-height: 1.25;
+    margin-top: 2px;
+  }
+  .case-deep-dive-btn {
+    grid-column: span 3;
+    margin-top: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
   }
 
   /* Shipped Products Mobile */
@@ -2645,14 +2792,28 @@ button:focus-visible, a:focus-visible {
   .dock-wrap-container {
     margin: 20px 0 36px;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
   .macos-dock {
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding: 8px 10px;
-    gap: 6px;
+    padding: 8px 12px;
+    gap: 8px;
+    justify-content: flex-start !important;
+  }
+  .dock-active-info {
+    max-width: 100%;
+    padding: 6px 12px;
+    font-size: 11.5px;
+  }
+  .dock-active-desc {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
   }
   .macos-dock::-webkit-scrollbar {
     display: none;
@@ -3087,6 +3248,8 @@ button:focus-visible, a:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .case-share-btn:hover {

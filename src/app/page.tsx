@@ -183,7 +183,7 @@ const sideProjects = [
     category: "B2B SaaS · Onboarding Risk",
     tag: "B2B / Workflow",
     tech: ["Next.js", "TypeScript", "TailwindCSS", "Prisma", "OAuth"],
-    desc: "Open-source risk engine that connects Salesforce, Jira, Slack, and Google Calendar to predict client onboarding delays before subscription revenue slips.",
+    desc: "Predicts client onboarding delays across Salesforce & Jira before subscription revenue slips.",
     preview: "/beacon.png",
     live: "https://covalynce-beacon.vercel.app/",
     github: "https://github.com/Practical-APM/Beacon",
@@ -194,7 +194,7 @@ const sideProjects = [
     category: "AI FinOps · Spend Visibility",
     tag: "AI & FinOps",
     tech: ["React", "Chart.js", "OpenAI", "Anthropic", "Gemini API"],
-    desc: "Consolidated financial dashboard tracking organization-wide AI costs across OpenAI, Anthropic, and Gemini before the monthly invoice arrives.",
+    desc: "Real-time dashboard tracking organization-wide AI costs across OpenAI, Anthropic, and Gemini.",
     preview: "/ledger.png",
     live: "https://covalynce-ledger.vercel.app/",
     github: "https://github.com/Practical-APM/Covalynce",
@@ -205,7 +205,7 @@ const sideProjects = [
     category: "Developer Tools · Changelogs",
     tag: "AI & FinOps",
     tech: ["TypeScript", "GitHub API", "OpenAI", "Linear", "CLI"],
-    desc: "Event-driven orchestrator that analyzes merged PRs and closed sprints to automatically generate customer changelogs and launch announcements.",
+    desc: "Auto-generates release changelogs and launch notes directly from merged PRs and closed sprints.",
     preview: "/echo.png",
     live: "https://covalynce-echo.vercel.app/",
     github: "https://github.com/Practical-APM/Covalynce",
@@ -216,7 +216,7 @@ const sideProjects = [
     category: "Product Ops · PRD Alignment",
     tag: "AI & FinOps",
     tech: ["Next.js", "Claude/GPT-4", "Linear API", "Jira", "Zendesk"],
-    desc: "Reads one product PRD from Notion or Docs and instantly generates synchronized, production-ready specs for Engineering, QA, Support, and Marketing.",
+    desc: "Turns one product PRD into synchronized, production specs for Engineering, QA, and Support.",
     preview: "/knuud.png",
     live: "https://knuud.space",
     github: "https://github.com/Practical-APM/knuud",
@@ -227,7 +227,7 @@ const sideProjects = [
     category: "Hyperlocal Marketplace",
     tag: "Community",
     tech: ["Next.js", "PostgreSQL", "Supabase", "Leaflet"],
-    desc: "Gated resident marketplace for apartment societies to buy, sell, or giveaway bulky furniture and appliances with zero shipping or packaging friction.",
+    desc: "Apartment society marketplace for neighbors to trade furniture and appliances with zero shipping.",
     preview: "/bhangar.png",
     live: "https://bhangar.space",
     github: "https://github.com/Practical-APM/bhangar",
@@ -238,7 +238,7 @@ const sideProjects = [
     category: "Data Pipelines · Web Extraction",
     tag: "B2B / Workflow",
     tech: ["TypeScript", "Next.js", "Node.js", "S3/GCS", "RazorpayX"],
-    desc: "Structured web data platform delivering privacy-screened pricing, registry, and job market datasets directly via Webhooks, REST API, or S3/GCS.",
+    desc: "Structured web datasets and pricing feeds delivered via Webhooks, REST API, and cloud storage.",
     preview: "/syftin.png",
     live: "https://syftin.vercel.app",
     github: "https://github.com/Practical-APM/Syftin",
@@ -325,8 +325,8 @@ const caseStudies: CaseStudy[] = [
     tags: ["Fintech / Banking", "Digital KYC", "Process Re-engineering"],
     title: "Digitizing Corporate Salary Onboarding for HDFC Bank",
     company: "TartanHQ Solutions · 2025–2026",
-    problem: "Corporate salary account onboarding relied on branch visits, manual paper KYC, and physical courier handoffs. A 7–10 day turnaround caused over 40% of newly hired employees to abandon their setup before account activation.",
-    ownership: "Owned product definition and execution end-to-end: negotiated API security clearance with HDFC risk leadership, designed a 3-step digital KYC journey with edge-based Aadhaar masking, and drove engineering through bank security audits.",
+    problem: "Branch visits and physical paper KYC caused a 7–10 day lag and 40% new hire dropout.",
+    ownership: "Designed a 3-step digital KYC flow with client-side masking, cutting turnaround from 10 days to <30 minutes.",
     metrics: [
       { num: "60%", label: "Faster Turnaround (7–10 Days → <30 Mins)" },
       { num: "12 → 3", label: "Steps in Onboarding Flow" },
@@ -393,8 +393,8 @@ const caseStudies: CaseStudy[] = [
     tags: ["Enterprise Integrations", "Data Pipelines", "API Infrastructure"],
     title: "Scaling 90+ HRMS Integrations for MakeMyTrip & Enterprise Clients",
     company: "TartanHQ Solutions · 2025",
-    problem: "Enterprise clients like MakeMyTrip rely on disparate HR tools (Workday, Darwinbox, SAP) with custom schemas and strict rate limits. Out-of-sync payroll records and pipeline failures caused immediate payroll processing blockers.",
-    ownership: "Product lead for Tartan's integration platform. Led a 10-engineer squad to design a unified intermediate data schema across 90+ HRMS vendors, built auto-throttling connectors, and created a self-serve test sandbox that cut enterprise client go-live time from 6 weeks to 4 days.",
+    problem: "Fragmented schemas across 90+ HR tools caused frequent sync failures and blocked payroll runs.",
+    ownership: "Led squad of 10 to design canonical intermediate schemas, auto-throttling connectors, and test sandboxes.",
     metrics: [
       { num: "90+", label: "Enterprise Connectors Shipped" },
       { num: "10 Devs", label: "Cross-Functional Squad Led" },
@@ -461,8 +461,8 @@ const caseStudies: CaseStudy[] = [
     tags: ["Client Retention", "Workflow Automation", "Enterprise SaaS"],
     title: "Reducing Client Onboarding Churn by 20% Through Event-Driven Automation",
     company: "Vensure Employer Solutions · 2024–2025",
-    problem: "During the 60-day client implementation window, accounts suffered a 20% early cancellation rate due to lack of visibility. Account managers were trapped in 15+ hours of manual weekly status inquiries instead of resolving onboarding roadblocks.",
-    ownership: "Interviewed 25 churned clients and customer ops teams to isolate drop-off points. Designed and launched an event-driven status tracking platform with batched milestone digests and passwordless tracking links, dropping early churn by 20% across two consecutive quarters.",
+    problem: "Zero milestone visibility during the 60-day setup window caused a 20% early cancellation churn.",
+    ownership: "Built event-driven status tracking with milestone digests, cutting early churn by 20% across two consecutive quarters.",
     metrics: [
       { num: "20%", label: "Reduction in Onboarding Churn" },
       { num: "15 hrs/wk", label: "Saved per Account Manager" },
@@ -1480,10 +1480,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                     <strong>Sakar</strong> is a Product Manager &amp; Builder based in <strong>Gurugram</strong>.
                   </h1>
                   <p className="hero-body-p">
-                    Product Analyst at <strong>TartanHQ</strong>. I build simple, automated systems for complex enterprise problems—like cutting HDFC Bank&apos;s corporate onboarding from 12 steps down to 3.
-                  </p>
-                  <p className="hero-body-p" style={{ color: "var(--text-3)", fontSize: "13.5px" }}>
-                    Outside work, I ship live side projects, back Liverpool FC, and listen to indie Hindi rock. Explore the widgets below—everything is interactive.
+                    Product Analyst at <strong>TartanHQ</strong>. I design simple, automated systems for enterprise problems—like cutting HDFC Bank&apos;s corporate onboarding from 12 steps down to 3.
                   </p>
                 </div>
 
@@ -1793,19 +1790,31 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                       <div className="note-item">
                         <span className="note-num">01</span>
                         <div className="note-text-wrap">
-                          <strong>Validate early with working prototypes.</strong> Test assumptions quickly with interactive mockups or API endpoints before committing full engineering bandwidth. If a concept cannot be validated within a week, break it into smaller milestones.
+                          <strong>Prototypes over decks:</strong> Test working flows before locking engineering sprints.
                         </div>
                       </div>
                       <div className="note-item">
                         <span className="note-num">02</span>
                         <div className="note-text-wrap">
-                          <strong>Study actual user drop-off directly.</strong> Review funnel telemetry and shadow operations teams as they navigate the product. Removing unnecessary steps in a workflow always drives higher retention than adding explanatory tooltips.
+                          <strong>Telemetry over opinions:</strong> Drop-off analytics reveal real friction, not guesswork.
                         </div>
                       </div>
                       <div className="note-item">
                         <span className="note-num">03</span>
                         <div className="note-text-wrap">
-                          <strong>Collaborate closely on technical architecture.</strong> Understand API payload structures, database schemas, and external vendor rate limits. Partnering with engineers on constraints early prevents late-stage rework and delivery delays.
+                          <strong>Technical depth first:</strong> Aligning API schemas early stops late-stage rework.
+                        </div>
+                      </div>
+                      <div className="note-item">
+                        <span className="note-num">04</span>
+                        <div className="note-text-wrap">
+                          <strong>Ship in canaries:</strong> Validate hypotheses on 5% traffic before full rollout.
+                        </div>
+                      </div>
+                      <div className="note-item">
+                        <span className="note-num">05</span>
+                        <div className="note-text-wrap">
+                          <strong>Outcome over output:</strong> PMs are measured on retention &amp; margins, not story points.
                         </div>
                       </div>
                     </>
@@ -1816,50 +1825,72 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                       <div className="note-item">
                         <span className="note-num">01</span>
                         <div className="note-text-wrap">
-                          <strong>Problem &amp; Business Context:</strong> A clear breakdown of the customer pain point, who is impacted, and the operational or revenue cost of leaving it unresolved.
+                          <strong>Problem &amp; Cost:</strong> Measurable operational or revenue impact of the issue.
                         </div>
                       </div>
                       <div className="note-item">
                         <span className="note-num">02</span>
                         <div className="note-text-wrap">
-                          <strong>Measurable Success Targets:</strong> Concrete product metrics with defined baselines and targets (e.g. 60% turnaround reduction, zero pipeline sync dropouts).
+                          <strong>Target Metrics:</strong> Concrete baselines (e.g. 60% turnaround drop).
                         </div>
                       </div>
                       <div className="note-item">
                         <span className="note-num">03</span>
                         <div className="note-text-wrap">
-                          <strong>User Journey &amp; Edge Cases:</strong> The primary path mapped out alongside error handling states, validation rules, and recovery behaviors.
+                          <strong>Edge Paths:</strong> Error handling &amp; fallback states mapped upfront.
                         </div>
                       </div>
                       <div className="note-item">
                         <span className="note-num">04</span>
                         <div className="note-text-wrap">
-                          <strong>Technical Contracts &amp; Schemas:</strong> Request/response payloads, authentication flows, and data models aligned with engineering before sprint kickoff.
+                          <strong>Data Contracts:</strong> Payload schemas verified with engineering before kickoff.
+                        </div>
+                      </div>
+                      <div className="note-item">
+                        <span className="note-num">05</span>
+                        <div className="note-text-wrap">
+                          <strong>Post-Launch Audit:</strong> 30-day cohort tracking to iterate or deprecate.
                         </div>
                       </div>
                     </>
                   )}
 
                   {activeNotesTab === "recruiter" && (
-                    <div style={{ padding: "4px 0" }}>
-                      <p style={{ fontSize: "13px", color: "var(--text-2)", lineHeight: 1.55, margin: "0 0 12px 0" }}>
-                        <strong>Executive Summary:</strong> Product Manager at TartanHQ with hands-on technical depth across B2B fintech and enterprise platforms. Led an engineering squad of 10 delivering 90+ enterprise integrations (MakeMyTrip), digitized HDFC Bank corporate onboarding (cutting turnaround time by 60%), and actively builds production software outside work.
-                      </p>
+                    <div style={{ padding: "2px 0" }}>
+                      <div className="recruiter-highlight-grid">
+                        <div className="recruiter-stat-item">
+                          <span className="recruiter-stat-label">Current Role</span>
+                          <span className="recruiter-stat-value">Product Analyst @ TartanHQ</span>
+                        </div>
+                        <div className="recruiter-stat-item">
+                          <span className="recruiter-stat-label">Domain</span>
+                          <span className="recruiter-stat-value">B2B SaaS · Fintech KYC · Integrations</span>
+                        </div>
+                        <div className="recruiter-stat-item">
+                          <span className="recruiter-stat-label">Shipped Scale</span>
+                          <span className="recruiter-stat-value">90+ Connectors · HDFC Bank Digital KYC</span>
+                        </div>
+                      </div>
                       <div className="recruiter-meta-row">
-                        <span className="recruiter-meta-pill">📍 Gurugram, India</span>
-                        <span className="recruiter-meta-pill">🏢 TartanHQ</span>
-                        <span className="recruiter-meta-pill">💼 B2B Fintech &amp; SaaS</span>
+                        <span className="recruiter-meta-pill">📍 Gurugram / Remote</span>
+                        <span className="recruiter-meta-pill">⚡ 0→1 Execution</span>
                         <span className="recruiter-meta-pill">🛠️ Technical PM</span>
                       </div>
                       <button
                         onClick={handleCopyRecruiterSummary}
                         className="btn-recruiter-copy"
                         aria-label="Copy candidate summary to clipboard"
+                        style={{ marginTop: "10px" }}
                       >
-                        {summaryCopied ? "✓ Summary Copied for Slack!" : "📋 Copy Candidate Summary for Slack / ATS"}
+                        {summaryCopied ? "✓ Summary Copied!" : "📋 Copy Quick Summary for Slack / ATS"}
                       </button>
                     </div>
                   )}
+                </div>
+
+                <div className="notes-footer-bar">
+                  <span className="notes-file-slug">~/playbook/{activeNotesTab}.md</span>
+                  <span className="notes-meta-tag">UTF-8 · Markdown · Sakar Baxi</span>
                 </div>
               </div>
 
@@ -1886,7 +1917,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                 <h2 id="work-head" className="section-head-title">Systems Shipped at Scale.<br />Measurable Product Impact.</h2>
               </div>
               <p className="section-head-desc">
-                In-depth breakdowns of 0→1 product strategy, system architecture, and verified business outcomes from my enterprise work experience.
+                0→1 product execution, architecture tradeoffs, and verified business outcomes.
               </p>
             </div>
 
@@ -1976,14 +2007,15 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                           <h3 className="case-main-h3">{cs.title}</h3>
                           <div className="case-company-sub">{cs.company}</div>
                           
-                          <div style={{ marginBottom: "14px" }}>
-                            <div style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: "4px" }}>The Problem</div>
-                            <p className="case-desc-p">{cs.problem}</p>
-                          </div>
-
-                          <div>
-                            <div style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: "4px" }}>What I Owned (0→1 PM Role)</div>
-                            <p className="case-desc-p">{cs.ownership}</p>
+                          <div className="case-summary-block">
+                            <div className="case-summary-item">
+                              <span className="case-summary-badge challenge">Problem</span>
+                              <p className="case-summary-text">{cs.problem}</p>
+                            </div>
+                            <div className="case-summary-item">
+                              <span className="case-summary-badge delivery">Delivered</span>
+                              <p className="case-summary-text">{cs.ownership}</p>
+                            </div>
                           </div>
                         </div>
 
@@ -2160,7 +2192,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                 <h2 id="skills-head" className="section-head-title">Hands-On Tech Stack &<br />Everyday Product Skills.</h2>
               </div>
               <p className="section-head-desc">
-                Tools I build with daily, backed by clear communication and dependable execution. Hover any icon in the dock to inspect tools.
+                Everyday engineering toolchain and core product execution frameworks.
               </p>
             </div>
 
@@ -2222,7 +2254,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                   Off The Clock.<br />Passions, Debates &amp; Rabbit Holes.
                 </h2>
                 <p className="section-head-desc">
-                  What keeps me energised, intensely curious, and occasionally arguing on the internet once the laptop closes.
+                  Football, sitcom debates, late-night reading, and indie rock.
                 </p>
               </div>
             </div>
@@ -2252,7 +2284,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                     <span className="off-clock-tag">YNWA</span>
                   </div>
                   <p className="off-clock-desc">
-                    Passionate LFC fan. I will watch the 2006 Istanbul final for the 100th time and still celebrate like it&apos;s the first time. YNWA.
+                    Lifelong Red. Still celebrating Istanbul like it was yesterday. YNWA.
                   </p>
                 </div>
               </div>
@@ -2279,7 +2311,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                     <span className="off-clock-tag">TBBT &gt;&gt;&gt; HIMYM &gt;&gt;&gt; Friends</span>
                   </div>
                   <p className="off-clock-desc">
-                    No point discussing why: <em>The Big Bang Theory</em> &gt;&gt;&gt; <em>How I Met Your Mother</em> &gt;&gt;&gt; <em>Friends</em>. Being a STEM nerd comes with its own perks.
+                    The STEM nerd ranking: <em>The Big Bang Theory</em> &gt;&gt;&gt; <em>HIMYM</em> &gt;&gt;&gt; <em>Friends</em>.
                   </p>
                 </div>
               </div>
@@ -2306,7 +2338,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                     <span className="off-clock-tag">1984 &amp; Medium articles</span>
                   </div>
                   <p className="off-clock-desc">
-                    Currently re-reading George Orwell’s <em>1984</em> alongside latest patent filings. Fascinated by tech, philosophy, psychology and more.
+                    Currently re-reading George Orwell’s <em>1984</em>, patent filings, and psychology rabbit holes.
                   </p>
                 </div>
               </div>
@@ -2333,7 +2365,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                     <span className="off-clock-tag">Indie Rock &amp; Focus</span>
                   </div>
                   <p className="off-clock-desc">
-                    2000s indie rock on heavy rotation (The Local Train, Jal, Silk Route, The Strokes, Arctic Monkeys) paired with deep-focus downtempo when shipping code late into the night.
+                    2000s Hindi indie rock &amp; downtempo for late-night shipping.
                   </p>
                   <div className="off-clock-footer-action">
                     <a
@@ -2360,7 +2392,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
             <div className="contact-bento-card">
               <h2 id="contact-head" className="contact-h2">Got a product problem? Let&apos;s talk.</h2>
               <p className="contact-sub-p">
-                Whether you&apos;re looking to hire a Product Manager, need feedback on an early idea, or just want to chat about building simple software—I&apos;d love to connect.
+                Open for 0→1 product roles, technical PM advisory, or building software together.
               </p>
 
               <div className="contact-chips-bar">
