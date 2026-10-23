@@ -1616,27 +1616,45 @@ button:focus-visible, a:focus-visible {
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  opacity: 1;
-  filter: none;
+  opacity: 0.55;
+  filter: grayscale(100%) contrast(0.95) brightness(0.8);
   transform: scale(1);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.3s ease;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.4s ease,
+              filter 0.4s ease;
+}
+
+[data-theme="light"] .app-preview-pane img {
+  opacity: 0.6;
+  filter: grayscale(100%) contrast(0.9) brightness(0.95);
 }
 
 .app-preview-glass {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 65%, rgba(13, 17, 23, 0.55) 100%);
+  background: rgba(13, 17, 23, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              backdrop-filter 0.35s ease,
+              -webkit-backdrop-filter 0.35s ease;
 }
 
 [data-theme="light"] .app-preview-glass {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 65%, rgba(240, 242, 246, 0.55) 100%);
+  background: rgba(245, 245, 248, 0.45);
+}
+
+.app-widget-card:hover .app-preview-glass {
+  opacity: 0;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
 }
 
 .app-widget-card:hover .app-preview-pane img {
-  transform: scale(1.03);
+  transform: scale(1.04);
+  opacity: 1;
+  filter: grayscale(0%) contrast(1) brightness(1);
 }
 
 .app-body-pane {
