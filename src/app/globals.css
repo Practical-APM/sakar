@@ -2782,10 +2782,21 @@ button:focus-visible, a:focus-visible {
 
   /* Shipped Products Mobile */
   .app-widget-card {
-    padding: 16px;
+    padding: 0;
   }
-  .app-preview-wrap {
-    height: 170px;
+  .app-preview-pane {
+    height: 185px;
+  }
+  .app-preview-pane img {
+    opacity: 0.95 !important;
+    filter: none !important;
+  }
+  .app-preview-glass {
+    opacity: 0 !important;
+    display: none !important;
+  }
+  .app-body-pane {
+    padding: 16px 14px 18px;
   }
 
   /* Dock Mobile */

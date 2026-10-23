@@ -180,8 +180,9 @@ const sideProjects = [
   {
     id: "beacon",
     name: "Beacon",
-    category: "B2B SaaS · Onboarding Risk",
+    badge: "B2B SaaS",
     tag: "B2B / Workflow",
+    category: "Onboarding Risk · Revenue Protection",
     tech: ["Next.js", "TypeScript", "TailwindCSS", "Prisma", "OAuth"],
     desc: "Predicts client onboarding delays across Salesforce & Jira before subscription revenue slips.",
     preview: "/beacon.png",
@@ -191,8 +192,9 @@ const sideProjects = [
   {
     id: "ledger",
     name: "Ledger",
-    category: "AI FinOps · Spend Visibility",
-    tag: "AI & FinOps",
+    badge: "AI FinOps",
+    tag: "AI & Automation",
+    category: "Spend Visibility · Cost Governance",
     tech: ["React", "Chart.js", "OpenAI", "Anthropic", "Gemini API"],
     desc: "Real-time dashboard tracking organization-wide AI costs across OpenAI, Anthropic, and Gemini.",
     preview: "/ledger.png",
@@ -202,8 +204,9 @@ const sideProjects = [
   {
     id: "echo",
     name: "Echo",
-    category: "Developer Tools · Changelogs",
-    tag: "AI & FinOps",
+    badge: "Dev Tools",
+    tag: "AI & Automation",
+    category: "Release Engineering · Automated Changelogs",
     tech: ["TypeScript", "GitHub API", "OpenAI", "Linear", "CLI"],
     desc: "Auto-generates release changelogs and launch notes directly from merged PRs and closed sprints.",
     preview: "/echo.png",
@@ -213,8 +216,9 @@ const sideProjects = [
   {
     id: "knuud",
     name: "Knuud",
-    category: "Product Ops · PRD Alignment",
-    tag: "AI & FinOps",
+    badge: "Product Ops",
+    tag: "AI & Automation",
+    category: "PRD Spec Sync · Multi-Team Alignment",
     tech: ["Next.js", "Claude/GPT-4", "Linear API", "Jira", "Zendesk"],
     desc: "Turns one product PRD into synchronized, production specs for Engineering, QA, and Support.",
     preview: "/knuud.png",
@@ -223,9 +227,10 @@ const sideProjects = [
   },
   {
     id: "bhangar",
-    name: "Bhangar.space",
-    category: "Hyperlocal Marketplace",
+    name: "Bhangar",
+    badge: "Marketplace",
     tag: "Community",
+    category: "Hyperlocal Circular Economy · Society Trade",
     tech: ["Next.js", "PostgreSQL", "Supabase", "Leaflet"],
     desc: "Apartment society marketplace for neighbors to trade furniture and appliances with zero shipping.",
     preview: "/bhangar.png",
@@ -235,8 +240,9 @@ const sideProjects = [
   {
     id: "syftin",
     name: "Syftin",
-    category: "Data Pipelines · Web Extraction",
+    badge: "Data Pipelines",
     tag: "B2B / Workflow",
+    category: "Enterprise Data Pipelines · Web Feeds",
     tech: ["TypeScript", "Next.js", "Node.js", "S3/GCS", "RazorpayX"],
     desc: "Structured web datasets and pricing feeds delivered via Webhooks, REST API, and cloud storage.",
     preview: "/syftin.png",
@@ -2072,7 +2078,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
 
             {/* Project Category Filter Pills */}
             <div className="projects-filter-bar" role="tablist" aria-label="Filter projects by category">
-              {["All", "AI & FinOps", "B2B / Workflow", "Community"].map((tag) => (
+              {["All", "AI & Automation", "B2B / Workflow", "Community"].map((tag) => (
                 <button
                   key={tag}
                   onClick={() => setSelectedProjectTag(tag)}
@@ -2123,7 +2129,7 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                           <span>Live</span>
                         </span>
                       </div>
-                      <span className="app-category-badge">{proj.tag}</span>
+                      <span className="app-category-badge">{proj.badge || proj.tag}</span>
                     </div>
                     <div className="app-category-sub">{proj.category}</div>
                     <p className="app-desc-p">{proj.desc}</p>
