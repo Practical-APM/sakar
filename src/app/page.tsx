@@ -667,15 +667,6 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [isStackPaused]);
 
-  const handlePrevStack = useCallback(() => {
-    playTactileSound("click");
-    setActiveStackIndex((prev) => (prev - 1 + caseStudies.length) % caseStudies.length);
-  }, [playTactileSound]);
-
-  const handleNextStack = useCallback(() => {
-    playTactileSound("click");
-    setActiveStackIndex((prev) => (prev + 1) % caseStudies.length);
-  }, [playTactileSound]);
   const [bouncingTech, setBouncingTech] = useState<string | null>(null);
 
   // Initialize theme & sound preference from localStorage or system preference
@@ -1905,49 +1896,6 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
               onMouseEnter={() => setIsStackPaused(true)}
               onMouseLeave={() => setIsStackPaused(false)}
             >
-              {/* Controls HUD */}
-              <div className="case-stack-controls">
-                <div className="case-stack-tabs" role="tablist" aria-label="Enterprise case study selector">
-                  {caseStudies.map((cs, idx) => (
-                    <button
-                      key={cs.id}
-                      onClick={() => {
-                        playTactileSound("click");
-                        setActiveStackIndex(idx);
-                      }}
-                      className={`case-stack-tab-btn${activeStackIndex === idx ? " active" : ""}`}
-                      role="tab"
-                      aria-selected={activeStackIndex === idx}
-                    >
-                      <span className="case-stack-tab-dot" />
-                      <span>{cs.id === "hdfc" ? "01 · HDFC Bank" : cs.id === "hrms" ? "02 · Enterprise HRMS" : "03 · Vensure PEO"}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="case-stack-nav-group">
-                  <span className="stack-status-hint">
-                    {isStackPaused ? "⏸ Paused (hovering)" : "↻ Auto-rotating"}
-                  </span>
-                  <button
-                    onClick={handlePrevStack}
-                    className="case-stack-nav-arrow"
-                    title="Previous case study"
-                    aria-label="Previous case study"
-                  >
-                    ←
-                  </button>
-                  <button
-                    onClick={handleNextStack}
-                    className="case-stack-nav-arrow"
-                    title="Next case study"
-                    aria-label="Next case study"
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
-
               {/* 3D Stack Deck */}
               <div className="case-stack-deck">
                 {caseStudies.map((cs, i) => {
