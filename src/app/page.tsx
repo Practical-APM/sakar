@@ -1890,54 +1890,12 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
               </p>
             </div>
 
-            {/* Executive Filing Drawer Architecture */}
+            {/* 3D Drifted Filing Cards Showcase */}
             <div
               className="case-stacked-wrapper"
               onMouseEnter={() => setIsStackPaused(true)}
               onMouseLeave={() => setIsStackPaused(false)}
             >
-              {/* Executive Filing Drawer Rail & Folder Tabs */}
-              <div className="case-drawer-rail" role="tablist" aria-label="Executive Filing Drawer">
-                <div className="case-drawer-rail-header">
-                  <div className="case-drawer-rail-label">
-                    <span className="case-drawer-status-led" />
-                    <span>EXECUTIVE FILING DRAWER · {caseStudies.length} ENTERPRISE DOSSIERS</span>
-                  </div>
-                  <span className="case-drawer-hint">Select tab or click drifted file in drawer</span>
-                </div>
-                <div className="case-drawer-tabs">
-                  {caseStudies.map((cs, i) => {
-                    const isFront = activeStackIndex === i;
-                    const shortCompany = cs.id === "hdfc" ? "HDFC Bank" : cs.id === "hrms" ? "MakeMyTrip" : "Vensure PEO";
-                    const shortTopic = cs.id === "hdfc" ? "Fintech Salary KYC" : cs.id === "hrms" ? "90+ HRMS Connectors" : "Onboarding Churn Drop";
-                    const highlightMetric = cs.metrics[0]?.num;
-
-                    return (
-                      <button
-                        key={cs.id}
-                        role="tab"
-                        aria-selected={isFront}
-                        className={`case-drawer-tab ${isFront ? "active" : ""}`}
-                        onClick={() => {
-                          playTactileSound("click");
-                          setActiveStackIndex(i);
-                        }}
-                        title={`Pull Dossier 0${i + 1} (${shortCompany}) forward`}
-                      >
-                        <div className="case-drawer-tab-info">
-                          <span className="case-drawer-tab-folder">📁</span>
-                          <div className="case-drawer-tab-text">
-                            <span className="case-drawer-tab-name">0{i + 1} · {shortCompany}</span>
-                            <span className="case-drawer-tab-sub">{shortTopic}</span>
-                          </div>
-                        </div>
-                        <span className="case-drawer-tab-stat">{highlightMetric}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* 3D Stack Deck */}
               <div className="case-stack-deck">
                 {caseStudies.map((cs, i) => {
