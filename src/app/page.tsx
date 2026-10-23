@@ -522,427 +522,9 @@ const caseStudies: CaseStudy[] = [
       ],
     },
   },
-  {
-    id: "beacon",
-    category: "Shipped Products",
-    file: "beacon.app / implementation-risk-engine.ts",
-    tags: ["B2B SaaS", "Revenue Protection", "Workflow Automation"],
-    title: "Beacon: Predicting Client Implementation Delays Before Revenue Slips",
-    company: "Personal Build · 2026 · Open-Source B2B SaaS",
-    live: "https://covalynce-beacon.vercel.app/",
-    github: "https://github.com/Practical-APM/Beacon",
-    problem: "In enterprise software, client onboarding delays are usually discovered weeks too late—when a customer complains or misses go-live. By then, scheduled subscription revenue is already lost, and account managers scramble to fix preventable bottlenecks across disconnected tools.",
-    ownership: "Conceived, designed, and shipped an open-source risk engine from 0 to 1. Built automated OAuth connectors for Salesforce, Jira, Slack, and Google Calendar, designed an 80% confidence interval delay prediction model, and created a single portfolio dashboard where leadership triages at-risk customer revenue.",
-    metrics: [
-      { num: "25–30%", label: "Fewer Onboarding Delays" },
-      { num: "2× Faster", label: "Risk Escalation Detection" },
-      { num: "80%+", label: "Prediction Accuracy" },
-    ],
-    deepDive: {
-      headline: "An early-warning radar for B2B client onboarding—connecting Salesforce, Jira, Slack, and Calendar to protect go-live revenue before it slips.",
-      context: "Implementation teams manage dozens of client accounts across different tools. Account managers live in Salesforce, engineers work in Jira, and clients chat in Slack. When tasks stall, nobody notices until the scheduled go-live date passes. Leadership was relying on manual weekly status meetings where problems were reported after they had already cost money.",
-      timeline: "2026 · Shipped Live to Production · Open-Source Core",
-      architectureSteps: [
-        {
-          step: "01",
-          title: "Multi-Tool Signal Ingestion",
-          desc: "Listens to milestone status changes, ticket resolution velocity, calendar gaps, and client Slack activity via native OAuth connectors with zero manual data entry.",
-        },
-        {
-          step: "02",
-          title: "Confidence-Interval Risk Engine",
-          desc: "Evaluates historical project timelines and cross-tool signals to calculate predicted delay windows with 80% confidence intervals instead of black-box guesses.",
-        },
-        {
-          step: "03",
-          title: "Portfolio Command Center & Action Triggers",
-          desc: "Surfaces total revenue at risk (e.g. $185K MTD) and highlights the exact root causes, giving implementation leads concrete action steps before milestones slip.",
-        },
-      ],
-      tradeoffs: [
-        {
-          decision: "OAuth API Connections vs Replacing Jira/Salesforce",
-          chosen: "Non-Invasive API Connectors",
-          why: "Teams refuse to abandon existing project management tools. Connecting into existing workflows via OAuth achieved instant adoption without requiring any software replacement.",
-        },
-        {
-          decision: "Point Estimates vs Confidence Ranges",
-          chosen: "Point Estimate + Low/High Bounds",
-          why: "Implementation timelines carry natural variance. Showing an 80% confidence window builds trust with leadership rather than promising false exact dates.",
-        },
-      ],
-      pmOwnership: [
-        {
-          area: "Customer Discovery",
-          detail: "Interviewed B2B implementation managers to map the exact failure patterns where onboarding projects quietly fall behind.",
-        },
-        {
-          area: "0→1 Product Architecture",
-          detail: "Scoped the MVP around four high-leverage tools (Salesforce, Jira, Slack, Calendar) and defined the core portfolio risk algorithm.",
-        },
-        {
-          area: "Self-Hostable Open Source Strategy",
-          detail: "Packaged the platform with Docker Compose so security-conscious enterprise teams can self-host without sharing customer data externally.",
-        },
-      ],
-      impactDetails: [
-        { label: "Onboarding Slippage", value: "25–30% Fewer Delays", context: "Proactive alerts allowed teams to clear vendor and client bottlenecks days in advance." },
-        { label: "Escalation Speed", value: "2× Faster", context: "Leadership learns about stalled implementations from internal signals, not angry customer emails." },
-        { label: "Model Reliability", value: "80%+ Accuracy", context: "Consistently flagged stalled dependencies before go-live milestones were breached." },
-      ],
-    },
-  },
-  {
-    id: "ledger",
-    category: "Shipped Products",
-    file: "ledger.app / ai-spend-ledger.ts",
-    tags: ["AI FinOps", "Cost Observability", "Multi-Provider Billing"],
-    title: "Ledger: Real-Time AI Cost Attribution Across OpenAI, Anthropic & Gemini",
-    company: "Personal Build · 2026 · Apache 2.0 Open Source",
-    live: "https://covalynce-ledger.vercel.app/",
-    github: "https://github.com/Practical-APM/Covalynce",
-    problem: "Engineering teams are adopting multiple LLM providers simultaneously, but usage costs remain scattered across vendor portals. Finance gets a surprise five-figure invoice at the end of the month with zero context on which team, model, or feature caused the spike.",
-    ownership: "Designed and launched an open-source AI FinOps platform. Created background billing sync for OpenAI, Anthropic, and Google Gemini without requiring any proxy routing or code SDK modifications, and built team-level budget alerting.",
-    metrics: [
-      { num: "0 Lines", label: "Code Changes Required" },
-      { num: "3 Providers", label: "Consolidated in One Dashboard" },
-      { num: "100%", label: "Automated Cost Attribution" },
-    ],
-    deepDive: {
-      headline: "One unified financial ledger for organizational AI spend—monitoring OpenAI, Anthropic, and Gemini costs before the monthly invoice arrives.",
-      context: "Developers use OpenAI for embeddings, Anthropic for complex coding, and Gemini for long-context analysis. Billing is completely fragmented. Finance only sees credit card charges at month-end, while engineering leads lack granular attribution to know if a spike was caused by a rogue script, automated evaluation tests, or customer adoption.",
-      timeline: "2026 · Shipped Live to Production · Docker Community Edition",
-      architectureSteps: [
-        {
-          step: "01",
-          title: "Direct Billing Sync",
-          desc: "Fetches usage telemetry directly from provider management APIs using read-only API credentials—requiring zero proxy latency or SDK refactors in user code.",
-        },
-        {
-          step: "02",
-          title: "Normalized Spend Attribution",
-          desc: "Standardizes token counts, cache read/write rates, and model pricing across OpenAI, Anthropic, and Gemini into a unified financial schema.",
-        },
-        {
-          step: "03",
-          title: "Budget Threshold Guardrails",
-          desc: "Monitors month-to-date trajectory against custom team caps and fires in-app and Slack alerts before budgets are exceeded.",
-        },
-      ],
-      tradeoffs: [
-        {
-          decision: "API-Based Billing Sync vs Inline Reverse Proxy",
-          chosen: "Read-Only Billing Sync",
-          why: "Inline proxies add network latency, introduce single-point-of-failure risks, and expose raw user prompts. Reading billing APIs directly eliminated latency and privacy concerns.",
-        },
-        {
-          decision: "Commercial Cloud vs Apache 2.0 Self-Hosted",
-          chosen: "Docker Compose Community Edition",
-          why: "Companies do not want to hand financial credentials to a third-party startup. Providing a local Docker bundle removed all compliance friction.",
-        },
-      ],
-      pmOwnership: [
-        {
-          area: "Market Opportunity Identification",
-          detail: "Identified the blind spot between developer observability tools (Helicone, Langfuse) and enterprise cloud FinOps (AWS Cost Explorer).",
-        },
-        {
-          area: "Unified Schema Design",
-          detail: "Structured a single data format mapping diverse provider billing formats (OpenAI usage vs Anthropic input/output tokens) into clean cost lines.",
-        },
-        {
-          area: "Zero-Friction UX",
-          detail: "Designed a 60-second setup path: paste read-only keys, verify initial sync, and view instant team cost graphs.",
-        },
-      ],
-      impactDetails: [
-        { label: "Setup Friction", value: "0 Code Changes", context: "Teams get full visibility without touching a single line of production application code." },
-        { label: "Billing Visibility", value: "Unified MTD Spend", context: "Finance and engineering share a single source of truth updated continuously." },
-        { label: "Budget Protection", value: "Proactive Alerts", context: "Catches runway spikes within hours instead of at the end of the billing cycle." },
-      ],
-    },
-  },
-  {
-    id: "echo",
-    category: "Shipped Products",
-    file: "echo.app / code-to-content-orchestrator.ts",
-    tags: ["Developer Tools", "Automated Changelogs", "Event-Driven LLMs"],
-    title: "Echo: Turning Git Pull Requests Into Customer-Ready Release Notes",
-    company: "Personal Build · 2026 · Production SaaS & CLI",
-    live: "https://covalynce-echo.vercel.app/",
-    github: "https://github.com/Practical-APM/Covalynce",
-    problem: "Engineering teams ship features weekly, but customer changelogs and launch announcements regularly lag behind. Writing release notes manually takes 3+ hours every Friday, pulling developers and PMs out of their core build loop and leaving customers uninformed about shipped value.",
-    ownership: "Architected and shipped an event-driven automation platform that bridges code and content. Built webhook listeners for GitHub PR merges and Jira sprint closures, an LLM pipeline that filters code chores from user-facing features, and a multi-channel distribution engine.",
-    metrics: [
-      { num: "3 hrs/wk", label: "Saved per Engineering Lead" },
-      { num: "0s Delay", label: "From Code Merge to Draft Notes" },
-      { num: "100%", label: "Shipped Features Announced" },
-    ],
-    deepDive: {
-      headline: "Zero lag between code and content—transforming raw git commits and closed sprints into polished changelogs and customer release notes.",
-      context: "Every startup faces 'Narrative Debt': engineers build valuable improvements, but public changelogs remain stagnant. Developers dislike writing marketing copy, and product marketing teams cannot decipher technical git diffs. As a result, customers don't know what shipped, and valuable product updates go unannounced.",
-      timeline: "2026 · Shipped Live to Production · Web & CLI",
-      architectureSteps: [
-        {
-          step: "01",
-          title: "Git & Ticket Webhook Ingestion",
-          desc: "Captures merged PR payloads, commit messages, and closed Jira/Linear issues in real time via webhooks or the local 'covalynce watch' CLI.",
-        },
-        {
-          step: "02",
-          title: "Diff Context Parsing Engine",
-          desc: "An LLM pipeline analyzes code changes, intelligently filtering out internal chores, dependency bumps, and CI tweaks from genuine customer-facing features.",
-        },
-        {
-          step: "03",
-          title: "One-Click Multi-Channel Distribution",
-          desc: "Formats drafts into structured release notes, Notion sprint retrospectives, and social announcements ready for one-click approval.",
-        },
-      ],
-      tradeoffs: [
-        {
-          decision: "Fully Autonomous Publishing vs Human-in-the-Loop Approval",
-          chosen: "Draft Generation with One-Click Approval",
-          why: "Automated social posts and changelogs without review risk publishing unreleased features or confusing technical details. Giving leads an interactive approve/edit card guaranteed brand safety.",
-        },
-        {
-          decision: "Web-Only App vs Terminal CLI",
-          chosen: "Hybrid Webhook + Local CLI",
-          why: "Developers prefer staying in their terminal. The CLI enables zero-upload local diff analysis, while the web dashboard gives non-technical teammates review access.",
-        },
-      ],
-      pmOwnership: [
-        {
-          area: "Prompt Engineering & Noise Filtering",
-          detail: "Fine-tuned the classification prompts to eliminate 85%+ of developer noise (lint fixes, merge commits) so drafts only highlight real customer value.",
-        },
-        {
-          area: "Cross-Tool Integrations",
-          detail: "Built integrations for GitHub, Jira, Linear, Notion, and Slack to match where technical and product teams already work.",
-        },
-        {
-          area: "Tactile Interactive UI",
-          detail: "Designed a Tinder-style swipe/approve review card interface for reviewing drafted notes in under 10 seconds.",
-        },
-      ],
-      impactDetails: [
-        { label: "Time Saved", value: "3+ Hours/Week", context: "Replaced manual Friday changelog compilation with automated, pre-drafted release summaries." },
-        { label: "Changelog Velocity", value: "Real-Time Sync", context: "Drafts appear within seconds of a PR merge rather than at the end of a sprint." },
-        { label: "Team Adoption", value: "Zero Friction", context: "Developers continue their normal git push routine without changing workflows." },
-      ],
-    },
-  },
-  {
-    id: "knuud",
-    category: "Shipped Products",
-    file: "knuud.space / prd-multi-team-orchestration.ts",
-    tags: ["Product Management", "PRD Tooling", "Cross-Functional Alignment"],
-    title: "Knuud: Turning One PRD Into Synchronized Specs for Eng, QA, Support & Marketing",
-    company: "Personal Build · 2026 · Production SaaS",
-    live: "https://knuud.space",
-    github: "https://github.com/Practical-APM/knuud",
-    problem: "When a product manager writes or updates a PRD, they have to manually rewrite it four different ways. Engineering needs technical tickets, QA needs test boundary scenarios, Support needs customer troubleshooting guides, and Marketing needs launch copy. Whenever scope changes mid-sprint, teams desynchronize and build the wrong thing.",
-    ownership: "Conceived and built Knuud from scratch to eliminate the 'Alignment Tax' for PMs. Built connectors for Notion, Google Docs, Confluence, and Jira, developed multi-persona LLM generation pipelines, and designed a non-destructive scope-drift detection system.",
-    metrics: [
-      { num: "4 Teams", label: "Specs Generated from 1 Brief" },
-      { num: "90%", label: "Reduction in Spec Handoff Time" },
-      { num: "0 Overwrites", label: "Non-Destructive Scope Drift Tracking" },
-    ],
-    deepDive: {
-      headline: "Write product requirements once—instantly deliver tailored, synchronized documentation for Engineering, QA, Support, and Marketing.",
-      context: "Product managers spend over 30% of their work week repeating requirements across teams. When a feature scope shifts (e.g., changing a timeout from 5s to 10s), QA tests against old criteria, Support writes FAQs from memory, and engineers build custom unreviewed error codes. Knuud ensures one source of truth automatically adapts to each team's job.",
-      timeline: "2026 · Shipped Live to Production · Active PM Users",
-      architectureSteps: [
-        {
-          step: "01",
-          title: "PRD Ingestion",
-          desc: "Pulls briefs from where PMs already write—Notion, Google Docs, Confluence, or pasted raw text—with automatic change detection.",
-        },
-        {
-          step: "02",
-          title: "Role-Specific Spec Synthesis",
-          desc: "Translates requirements into 4 distinct packs: technical tickets for Engineering, test cases for QA, call scripts for Support, and launch copy for Marketing.",
-        },
-        {
-          step: "03",
-          title: "One-Click Push & Drift Tracking",
-          desc: "Directly pushes tickets into Linear/Jira and guides to Zendesk/Slack. When the PRD is edited, changes appear as dated review drafts rather than silently overwriting live work.",
-        },
-      ],
-      tradeoffs: [
-        {
-          decision: "Building a New PRD Editor vs Integrating with Notion/Docs",
-          chosen: "External Reader & Distributor",
-          why: "PMs love their existing document editors. Forcing them into another note-taking tool creates massive friction. Knuud acts as an intelligence and distribution layer on top.",
-        },
-        {
-          decision: "Automatic Overwrite vs Reviewable Dated Drafts",
-          chosen: "Dated Drafts per Team",
-          why: "Silent updates break active engineering sprints and confuse QA midway through testing. Dated review drafts keep PMs in full control of re-announcing changes.",
-        },
-      ],
-      pmOwnership: [
-        {
-          area: "Problem Definition",
-          detail: "Identified the repetitive friction PMs face during post-PRD handoffs and defined the exact anatomy of the 4 core team packs.",
-        },
-        {
-          area: "Prompt & Persona Architecture",
-          detail: "Engineered prompts that generate strictly formatted OpenAPI specs, edge-case test matrices, and customer-facing FAQ trees from loose brief notes.",
-        },
-        {
-          area: "Tool Integration Strategy",
-          detail: "Integrated with Linear, Jira, Slack, and Zendesk so team outputs land directly where each department executes.",
-        },
-      ],
-      impactDetails: [
-        { label: "Handoff Efficiency", value: "Minutes vs Days", context: "Turned a multi-day documentation chore into a 30-second automated review." },
-        { label: "Cross-Team Clarity", value: "4 Tailored Packs", context: "Each department receives documentation customized to their exact workflow." },
-        { label: "Scope Drift", value: "100% Traceability", context: "Every mid-sprint requirement change is highlighted and reviewed before re-posting." },
-      ],
-    },
-  },
-  {
-    id: "bhangar",
-    category: "Shipped Products",
-    file: "bhangar.space / hyperlocal-resident-marketplace.tsx",
-    tags: ["Marketplace", "Hyperlocal", "Community Product"],
-    title: "Bhangar.space: Gated Hyperlocal Resident Marketplace for Gated Societies",
-    company: "Personal Build · 2025–2026 · Production Web Platform",
-    live: "https://bhangar.space",
-    github: "https://github.com/Practical-APM/bhangar",
-    problem: "Urban apartment residents face extreme friction when moving or decluttering bulky furniture and appliances. General classifieds like OLX or Facebook Marketplace involve strangers, security risks, spam negotiations, and high shipping or packing costs—even though someone in their own building often wants that exact item.",
-    ownership: "Designed, built, and launched a private community marketplace for apartment complexes. Implemented society-gated browsing, categorized listings (Moving Out Sale, WFH Setup, Free Giveaways), and zero-friction resident discovery.",
-    metrics: [
-      { num: "0 Shipping", label: "Elevator-Distance Handovers" },
-      { num: "100%", label: "Verified Resident Context" },
-      { num: "<5 Mins", label: "Listing Creation Flow" },
-    ],
-    deepDive: {
-      headline: "One neighbor's clutter, another neighbor's find—private, zero-shipping classifieds for residential apartment complexes.",
-      context: "When tenants relocate, bulky items like desks, monitors, washing machines, and plants are expensive to transport and hard to sell quickly. Traditional marketplaces force users to share personal phone numbers with strangers and arrange external courier logistics. Bhangar turns high-rise societies into hyper-efficient micro-economies.",
-      timeline: "2025–2026 · Production Live App",
-      architectureSteps: [
-        {
-          step: "01",
-          title: "Society-Gated Onboarding",
-          desc: "Residents choose their city and apartment society, immediately accessing an exclusive local feed of items for sale or giveaway within their building.",
-        },
-        {
-          step: "02",
-          title: "Context-Aware Listing Feed",
-          desc: "Categorizes items by resident intent ('Moving Out Sale', 'WFH Setup', 'Electronics', 'Needs Repair', 'Free to Grab') with transparent pricing.",
-        },
-        {
-          step: "03",
-          title: "Direct Elevator-Distance Handoffs",
-          desc: "Facilitates private peer-to-peer communication between neighbors, eliminating courier coordination, packaging waste, and transport fees.",
-        },
-      ],
-      tradeoffs: [
-        {
-          decision: "Open Global Catalog vs Society-Specific Silos",
-          chosen: "Society & Cluster Filtering",
-          why: "The core value proposition is zero-shipping and safety. Gating transactions to the immediate apartment cluster guarantees safe, walk-up handovers.",
-        },
-        {
-          decision: "In-App Escrow Payments vs Direct Peer Handoffs",
-          chosen: "Zero-Fee Peer Handoffs (UPI/Cash)",
-          why: "In-building transactions happen in person at the elevator lobby or apartment door. Forcing platform payment fees would increase churn without adding trust.",
-        },
-      ],
-      pmOwnership: [
-        {
-          area: "User Research & Persona Validation",
-          detail: "Interviewed relocating urban professionals to identify why items get discarded instead of resold (moving deadlines, stranger danger, packing hassle).",
-        },
-        {
-          area: "Lightweight Mobile-First UX",
-          detail: "Built a sub-2-second responsive mobile web experience with photo upload and instant category tagging.",
-        },
-        {
-          area: "Growth & Distribution Strategy",
-          detail: "Designed shareable society invitation cards for WhatsApp building resident groups to drive organic community density.",
-        },
-      ],
-      impactDetails: [
-        { label: "Logistics Cost", value: "Zero Packaging & Shipping", context: "Items travel across floors via the elevator rather than through external courier vans." },
-        { label: "Resident Safety", value: "Safe In-Building Handovers", context: "No unknown third parties entering residential security gates." },
-        { label: "Sustainability", value: "Zero Landfill Waste", context: "Quality pre-owned goods find new homes within the same apartment complex." },
-      ],
-    },
-  },
-  {
-    id: "syftin",
-    category: "Shipped Products",
-    file: "syftin.app / structured-web-data-network.ts",
-    tags: ["Data Infrastructure", "Web Extraction", "Enterprise API"],
-    title: "Syftin: Reliable Structured Web Data Pipelines for Research & AI",
-    company: "Personal Build · 2026 · Production Platform",
-    live: "https://syftin.vercel.app",
-    github: "https://github.com/Practical-APM/Syftin",
-    problem: "Business teams and AI companies need real-world pricing datasets, corporate registry records, and job listings for market research and LLM training. However, writing and maintaining web scrapers is notoriously fragile, breaks on layout changes, and risks collecting unvetted personal data (PII) that violates compliance standards.",
-    ownership: "Product lead and architect for Syftin. Built a two-sided platform: an enterprise buyer portal with automated PII screening and multi-destination data delivery (S3, Webhooks, REST API), paired with a decentralized contributor node engine with thermal PID throttling.",
-    metrics: [
-      { num: "98%+", label: "Field Match Quality Score" },
-      { num: "100%", label: "PII Scrubbing on All Outputs" },
-      { num: "4 Formats", label: "Delivery via S3, Webhook, API, SFTP" },
-    ],
-    deepDive: {
-      headline: "High-quality niche web datasets for business research and AI fine-tuning—privacy-screened, quality-assured, and delivered straight to your stack.",
-      context: "Companies tracking e-commerce prices (Blinkit, Zepto, Amazon) or public filings (MCA) waste engineering months fighting IP blocks and fixing broken parsers. Furthermore, collecting raw HTML often accidentally ingests private personal data like user phone numbers and emails, creating severe legal liability.",
-      timeline: "2026 · Production Live Platform · Early Access Pilot",
-      architectureSteps: [
-        {
-          step: "01",
-          title: "Strict Whitelist Job Submission",
-          desc: "Buyers define required schema fields (e.g. product title, SKU, price). Jobs are restricted strictly to approved public business domains.",
-        },
-        {
-          step: "02",
-          title: "Decentralized Contributor Network",
-          desc: "Lightweight background node workers fetch public HTML with hardware-aware PID throttling (Eco, Balanced, Titan) and automatic pause on metered connections.",
-        },
-        {
-          step: "03",
-          title: "PII Screening & Multi-Channel Delivery",
-          desc: "Every batch passes through automated regex and entity privacy filters to remove personal data before delivery via JSON, CSV, Webhooks, or S3/GCS buckets.",
-        },
-      ],
-      tradeoffs: [
-        {
-          decision: "Unrestricted Web Scraping vs Whitelisted Public Domains",
-          chosen: "Strict Approved-Domain Whitelist",
-          why: "Unrestricted scraping invites malicious use and grey-area privacy violations. Enforcing an approved whitelist guarantees legal compliance and enterprise trust.",
-        },
-        {
-          decision: "Centralized Server Proxies vs Distributed Contributor Nodes",
-          chosen: "Hybrid Contributor Compute",
-          why: "Centralized cloud scraper IPs get blocked by public anti-bot shields immediately. Distributing verified public page fetches across contributors ensured high reliability.",
-        },
-      ],
-      pmOwnership: [
-        {
-          area: "Enterprise Data Compliance",
-          detail: "Formulated the Data Processing Agreement (DPA) structure and architected automatic PII redaction (scrubbing emails and phones before download).",
-        },
-        {
-          area: "Quality Metric Engineering",
-          detail: "Implemented the 'Field Match Quality Score' so buyers can verify schema completeness before paying or ingesting data into downstream models.",
-        },
-        {
-          area: "Contributor Hardware Safeguards",
-          detail: "Designed thermal management and battery guards ensuring contributor machines never overheat or degrade user experience.",
-        },
-      ],
-      impactDetails: [
-        { label: "Extraction Quality", value: "98%+ Field Match", context: "Automated schema validation guarantees clean JSON output ready for analysis." },
-        { label: "Privacy & Compliance", value: "Zero PII Leakage", context: "Built-in redaction strips personal details before datasets leave the platform." },
-        { label: "Developer Velocity", value: "Instant Ingestion", context: "Teams get clean datasets via REST API or S3 without building or maintaining scrapers." },
-      ],
-    },
-  },
+
 ];
+
 
 /* ─── DATA: Playlists (YouTube Music Tracks) ──────────────────────────────── */
 const playlist = [
@@ -1073,7 +655,27 @@ export default function Home() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
-  const [caseStudyFilter, setCaseStudyFilter] = useState<"All" | "Enterprise Work" | "Shipped Products">("All");
+  const [activeStackIndex, setActiveStackIndex] = useState(0);
+  const [isStackPaused, setIsStackPaused] = useState(false);
+
+  // Auto-rotate stacked case studies every 6 seconds unless hovered/paused
+  useEffect(() => {
+    if (isStackPaused) return;
+    const timer = setInterval(() => {
+      setActiveStackIndex((prev) => (prev + 1) % caseStudies.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [isStackPaused]);
+
+  const handlePrevStack = useCallback(() => {
+    playTactileSound("click");
+    setActiveStackIndex((prev) => (prev - 1 + caseStudies.length) % caseStudies.length);
+  }, [playTactileSound]);
+
+  const handleNextStack = useCallback(() => {
+    playTactileSound("click");
+    setActiveStackIndex((prev) => (prev + 1) % caseStudies.length);
+  }, [playTactileSound]);
   const [bouncingTech, setBouncingTech] = useState<string | null>(null);
 
   // Initialize theme & sound preference from localStorage or system preference
@@ -1613,72 +1215,6 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
       icon: "📈",
       action: () => {
         setSelectedCaseStudy(caseStudies[2]);
-      },
-    },
-    {
-      id: "act-case-beacon",
-      title: "Case Study: Beacon Onboarding Risk Engine",
-      subtitle: "Deep dive: 25–30% fewer delays via multi-tool confidence prediction",
-      category: "Case Studies",
-      icon: "🚨",
-      action: () => {
-        const cs = caseStudies.find((c) => c.id === "beacon");
-        if (cs) setSelectedCaseStudy(cs);
-      },
-    },
-    {
-      id: "act-case-ledger",
-      title: "Case Study: Ledger AI Spend FinOps",
-      subtitle: "Deep dive: Zero-code multi-provider AI billing sync & team budget attribution",
-      category: "Case Studies",
-      icon: "📊",
-      action: () => {
-        const cs = caseStudies.find((c) => c.id === "ledger");
-        if (cs) setSelectedCaseStudy(cs);
-      },
-    },
-    {
-      id: "act-case-echo",
-      title: "Case Study: Echo Code-to-Content Orchestrator",
-      subtitle: "Deep dive: 3 hrs/wk saved via event-driven PR-to-changelog generation",
-      category: "Case Studies",
-      icon: "📣",
-      action: () => {
-        const cs = caseStudies.find((c) => c.id === "echo");
-        if (cs) setSelectedCaseStudy(cs);
-      },
-    },
-    {
-      id: "act-case-knuud",
-      title: "Case Study: Knuud PRD Alignment Platform",
-      subtitle: "Deep dive: 1 PRD into 4 synchronized team packs for Eng, QA, Support, Mktg",
-      category: "Case Studies",
-      icon: "📐",
-      action: () => {
-        const cs = caseStudies.find((c) => c.id === "knuud");
-        if (cs) setSelectedCaseStudy(cs);
-      },
-    },
-    {
-      id: "act-case-bhangar",
-      title: "Case Study: Bhangar.space Hyperlocal Marketplace",
-      subtitle: "Deep dive: Zero-shipping resident classifieds for gated apartment communities",
-      category: "Case Studies",
-      icon: "🏘️",
-      action: () => {
-        const cs = caseStudies.find((c) => c.id === "bhangar");
-        if (cs) setSelectedCaseStudy(cs);
-      },
-    },
-    {
-      id: "act-case-syftin",
-      title: "Case Study: Syftin Structured Web Data Network",
-      subtitle: "Deep dive: 98%+ match structured data pipelines with privacy screening",
-      category: "Case Studies",
-      icon: "🔍",
-      action: () => {
-        const cs = caseStudies.find((c) => c.id === "syftin");
-        if (cs) setSelectedCaseStudy(cs);
       },
     },
     {
@@ -2355,129 +1891,174 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                 />
               </div>
               <div className="section-head-title-wrap">
-                <div className="section-eyebrow-tag">Selected Case Studies</div>
+                <div className="section-eyebrow-tag">Enterprise Case Studies</div>
                 <h2 id="work-head" className="section-head-title">Systems Shipped at Scale.<br />Measurable Product Impact.</h2>
               </div>
               <p className="section-head-desc">
-                In-depth breakdowns of product strategy, technical architecture, and cross-functional execution across B2B fintech, data infrastructure, and client onboarding.
+                In-depth breakdowns of 0→1 product strategy, system architecture, and verified business outcomes from my enterprise work experience.
               </p>
             </div>
 
-            {/* Filter Tabs for Case Studies */}
-            <div className="projects-filter-bar" role="tablist" aria-label="Case study category filter" style={{ marginBottom: "22px" }}>
-              {(["All", "Enterprise Work", "Shipped Products"] as const).map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    playTactileSound("click");
-                    setCaseStudyFilter(cat);
-                  }}
-                  className={`filter-tag-btn${caseStudyFilter === cat ? " active" : ""}`}
-                  role="tab"
-                  aria-selected={caseStudyFilter === cat}
-                >
-                  {cat} {cat === "All" ? `(${caseStudies.length})` : `(${caseStudies.filter((c) => c.category === cat).length})`}
-                </button>
-              ))}
-            </div>
+            {/* 3D Stacked Rotating Cards Showcase */}
+            <div
+              className="case-stacked-wrapper"
+              onMouseEnter={() => setIsStackPaused(true)}
+              onMouseLeave={() => setIsStackPaused(false)}
+            >
+              {/* Controls HUD */}
+              <div className="case-stack-controls">
+                <div className="case-stack-tabs" role="tablist" aria-label="Enterprise case study selector">
+                  {caseStudies.map((cs, idx) => (
+                    <button
+                      key={cs.id}
+                      onClick={() => {
+                        playTactileSound("click");
+                        setActiveStackIndex(idx);
+                      }}
+                      className={`case-stack-tab-btn${activeStackIndex === idx ? " active" : ""}`}
+                      role="tab"
+                      aria-selected={activeStackIndex === idx}
+                    >
+                      <span className="case-stack-tab-dot" />
+                      <span>{cs.id === "hdfc" ? "01 · HDFC Bank" : cs.id === "hrms" ? "02 · Enterprise HRMS" : "03 · Vensure PEO"}</span>
+                    </button>
+                  ))}
+                </div>
 
-            <div className="case-study-dossier-grid">
-              {caseStudies
-                .filter((cs) => caseStudyFilter === "All" || cs.category === caseStudyFilter)
-                .map((cs) => (
-                <article key={cs.id} id={`case-${cs.id}`} className="case-dossier-card">
-                  <div className="case-card-header">
-                    <div className="mac-dots">
-                      <button
-                        className="mac-dot red clickable"
-                        onClick={() => {
+                <div className="case-stack-nav-group">
+                  <span className="stack-status-hint">
+                    {isStackPaused ? "⏸ Paused (hovering)" : "↻ Auto-rotating"}
+                  </span>
+                  <button
+                    onClick={handlePrevStack}
+                    className="case-stack-nav-arrow"
+                    title="Previous case study"
+                    aria-label="Previous case study"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={handleNextStack}
+                    className="case-stack-nav-arrow"
+                    title="Next case study"
+                    aria-label="Next case study"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+
+              {/* 3D Stack Deck */}
+              <div className="case-stack-deck">
+                {caseStudies.map((cs, i) => {
+                  const offset = (i - activeStackIndex + caseStudies.length) % caseStudies.length;
+                  const isFront = offset === 0;
+
+                  return (
+                    <article
+                      key={cs.id}
+                      id={`case-${cs.id}`}
+                      className={`case-stack-item state-${offset}`}
+                      onClick={() => {
+                        if (!isFront) {
                           playTactileSound("click");
-                          setSelectedCaseStudy(cs);
-                        }}
-                        aria-label={`Open ${cs.title} deep dive`}
-                        title="View Deep Dive (Click to open)"
-                      />
-                      <span className="mac-dot yellow" />
-                      <span className="mac-dot green" />
-                    </div>
-                    <span className="case-window-title">{cs.file}</span>
-                    <div className="case-header-actions">
-                      {cs.live && (
-                        <a
-                          href={cs.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="case-inspect-btn"
-                          title="Open live product in a new tab"
-                          style={{ textDecoration: "none" }}
-                        >
-                          ↗ Live App
-                        </a>
-                      )}
-                      <button
-                        onClick={() => {
-                          playTactileSound("click");
-                          setSelectedCaseStudy(cs);
-                        }}
-                        className="case-inspect-btn"
-                        title="Open deep architecture breakdown"
-                      >
-                        🔍 Deep Dive
-                      </button>
-                      <button
-                        onClick={() => handleCopyCaseLink(cs.id)}
-                        className="case-share-btn"
-                        title="Copy direct link to this case study"
-                        aria-label={`Copy link to ${cs.title}`}
-                      >
-                        {copiedCaseId === cs.id ? "✓ Copied!" : "🔗 Share"}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="case-card-content">
-                    <div>
-                      <div className="case-tags-wrap">
-                        {cs.tags.map((t, idx) => (
-                          <span key={t} className={`case-badge ${idx === 0 ? "blue" : idx === 1 ? "green" : ""}`}>{t}</span>
-                        ))}
-                      </div>
-                      <h3 className="case-main-h3">{cs.title}</h3>
-                      <div className="case-company-sub">{cs.company}</div>
-                      
-                      <div style={{ marginBottom: "14px" }}>
-                        <div style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: "4px" }}>The Problem</div>
-                        <p className="case-desc-p">{cs.problem}</p>
-                      </div>
-
-                      <div>
-                        <div style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: "4px" }}>What I Owned</div>
-                        <p className="case-desc-p">{cs.ownership}</p>
-                      </div>
-                    </div>
-
-                    <div className="case-metrics-column">
-                      {cs.metrics.map((m) => (
-                        <div key={m.label} className="metric-block">
-                          <div className="metric-big-num">{m.num}</div>
-                          <div className="metric-sub-label">{m.label}</div>
+                          setActiveStackIndex(i);
+                        }
+                      }}
+                      style={{
+                        zIndex: isFront ? 10 : offset === 1 ? 5 : 2,
+                        position: isFront ? "relative" : "absolute",
+                      }}
+                      aria-hidden={!isFront}
+                    >
+                      <div className="case-card-header">
+                        <div className="mac-dots">
+                          <button
+                            className="mac-dot red clickable"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              playTactileSound("click");
+                              setSelectedCaseStudy(cs);
+                            }}
+                            aria-label={`Open ${cs.title} deep dive`}
+                            title="View Deep Dive (Click to open)"
+                          />
+                          <span className="mac-dot yellow" />
+                          <span className="mac-dot green" />
                         </div>
-                      ))}
-                      <button
-                        onClick={() => {
-                          playTactileSound("click");
-                          setSelectedCaseStudy(cs);
-                        }}
-                        className="case-deep-dive-btn"
-                        title={`Read full architecture & PM breakdown for ${cs.title}`}
-                      >
-                        <span>Read Architecture Breakdown</span>
-                        <ArrowUpRight />
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                        <span className="case-window-title">{cs.file}</span>
+                        <div className="case-header-actions">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              playTactileSound("click");
+                              setSelectedCaseStudy(cs);
+                            }}
+                            className="case-inspect-btn"
+                            title="Open deep architecture breakdown"
+                          >
+                            🔍 Deep Dive
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyCaseLink(cs.id);
+                            }}
+                            className="case-share-btn"
+                            title="Copy direct link to this case study"
+                            aria-label={`Copy link to ${cs.title}`}
+                          >
+                            {copiedCaseId === cs.id ? "✓ Copied!" : "🔗 Share"}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="case-card-content">
+                        <div>
+                          <div className="case-tags-wrap">
+                            {cs.tags.map((t, idx) => (
+                              <span key={t} className={`case-badge ${idx === 0 ? "blue" : idx === 1 ? "green" : ""}`}>{t}</span>
+                            ))}
+                          </div>
+                          <h3 className="case-main-h3">{cs.title}</h3>
+                          <div className="case-company-sub">{cs.company}</div>
+                          
+                          <div style={{ marginBottom: "14px" }}>
+                            <div style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: "4px" }}>The Problem</div>
+                            <p className="case-desc-p">{cs.problem}</p>
+                          </div>
+
+                          <div>
+                            <div style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: "4px" }}>What I Owned (0→1 PM Role)</div>
+                            <p className="case-desc-p">{cs.ownership}</p>
+                          </div>
+                        </div>
+
+                        <div className="case-metrics-column">
+                          {cs.metrics.map((m) => (
+                            <div key={m.label} className="metric-block">
+                              <div className="metric-big-num">{m.num}</div>
+                              <div className="metric-sub-label">{m.label}</div>
+                            </div>
+                          ))}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              playTactileSound("click");
+                              setSelectedCaseStudy(cs);
+                            }}
+                            className="case-deep-dive-btn"
+                            title={`Read full architecture & PM breakdown for ${cs.title}`}
+                          >
+                            <span>Read Architecture Breakdown</span>
+                            <ArrowUpRight />
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>
@@ -2576,24 +2157,12 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                       </div>
                     )}
                     <div className="app-actions-row">
-                      <button
-                        onClick={() => {
-                          playTactileSound("click");
-                          const matchingCs = caseStudies.find((c) => c.id === proj.id);
-                          if (matchingCs) setSelectedCaseStudy(matchingCs);
-                        }}
-                        className="app-btn-case"
-                        title={`Read Case Study for ${proj.name}`}
-                      >
-                        <FileTextIcon />
-                        <span>Case Study</span>
-                      </button>
                       {proj.live && (
                         <a
                           href={proj.live}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="app-btn-live"
+                          className="app-btn-live-primary"
                           title={`Launch ${proj.name} web app`}
                         >
                           <span>Live App</span>
@@ -2605,11 +2174,11 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                           href={proj.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="app-btn-code"
+                          className="app-btn-code-secondary"
                           title={`View ${proj.name} repository on GitHub`}
-                          aria-label={`${proj.name} GitHub Repository`}
                         >
                           <Github />
+                          <span>Source Code</span>
                         </a>
                       )}
                     </div>
@@ -2885,29 +2454,6 @@ Coursework in Data Structures, Database Systems, Computer Networks & Software En
                   className="contact-chip-link"
                 >
                   <span>Drop an Email ↗</span>
-                </a>
-              </div>
-
-              {/* Quick Topic Openers for Recruiters & Founders */}
-              <div className="contact-preset-row">
-                <span className="contact-preset-label">Quick Drafts:</span>
-                <a
-                  href="mailto:baxisakar18@gmail.com?subject=Product%20Manager%20Role%20Discussion&body=Hi%20Sakar,%0A%0AWe're%20looking%20for%20a%20Product%20Manager%20to%20lead%20our%20squad.%20Loved%20your%20work%20on%20onboarding%20automation%20and%20would%20like%20to%20chat.%0A%0ABest,"
-                  className="contact-preset-pill"
-                >
-                  💼 Hiring for a PM role ↗
-                </a>
-                <a
-                  href="mailto:baxisakar18@gmail.com?subject=0%E2%86%921%20Product%20Collaboration&body=Hi%20Sakar,%0A%0AI'm%20building%20a%20new%20product%20and%20wanted%20to%20get%20your%20thoughts%20on%20the%200%E2%86%921%20scoping%20and%20workflows.%0A%0ACheers,"
-                  className="contact-preset-pill"
-                >
-                  🚀 Discuss a 0→1 build ↗
-                </a>
-                <a
-                  href="mailto:baxisakar18@gmail.com?subject=Product%20Coffee%20Chat&body=Hi%20Sakar,%0A%0AUp%20for%20a%20quick%20coffee%20or%20virtual%20chat%20to%20jam%20on%20product%20and%20tech?%0A%0ABest,"
-                  className="contact-preset-pill"
-                >
-                  ☕ Coffee &amp; Product chat ↗
                 </a>
               </div>
             </div>
